@@ -1,6 +1,7 @@
 import discord
 import gspread
 import asyncio
+import os
 
 from oauth2client.service_account import ServiceAccountCredentials
 from discord.ext import commands, tasks
@@ -38,7 +39,8 @@ class DatabaseFetcher(commands.Cog):
             database[current_row_values[0]] = {
                 'id_channel_simonsays' : current_row_values[1],
                 'id_role_simonalive' : current_row_values[2],
-                'id_role_simondead' : current_row_values[3]
+                'id_role_simondead' : current_row_values[3],
+                'id_role_simoncontroller' : current_row_values[4]
             }
             
             raw_database_to_list.append(current_row_values)
@@ -49,15 +51,25 @@ class DatabaseFetcher(commands.Cog):
         data_to_push = list()
         
         for row in raw_database_to_list:
-            if row[0] in self.client.id_database:
+            if row[0] in self.client.database:
                 continue
-            data_to_push.append(row)
+            data_to_push.append([
+                    row[0], 
+                    self.client.databasep[row[0]]['id_channel_simonsays'], 
+                    self.client.databasep[row[0]]['id_role_simonalive'], 
+                    self.client.databasep[row[0]]['id_role_simondead'], 
+                    self.client.databasep[row[0]]['id_role_simoncontroller']
+            ])
         
         sheet.append_rows(data_to_push)
         
         self.client.database.update(database)
         
-    self.fetchdatabase.start()
+    @commands.Cog.listener()
+    async def on_ready(self):
+        self.client.database = dict()
+        
+    fetchdatabase.start()
         
 def setup(client):
     client.add_cog(DatabaseFetcher(client))

@@ -27,6 +27,8 @@ class DatabaseFetcher(commands.Cog):
     @tasks.loop(minutes=15)
     async def fetchdatabase(self, sheet=self.sheet):
 
+        print('Database fetch has started')
+
         # Fetching the database
         raw_database = sheet.get_all_records()
         database = dict()
@@ -64,6 +66,8 @@ class DatabaseFetcher(commands.Cog):
         sheet.append_rows(data_to_push)
         
         self.client.database.update(database)
+        
+    print('Database fetch finished')
         
     @commands.Cog.listener()
     async def on_ready(self):

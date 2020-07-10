@@ -13,4 +13,7 @@ async def on_ready():
             client.load_extension(f"data.{file[:-3]}")
     print('All commands loaded, boot successful')
     
+# Everything is in the Data and Cogs only commands here are for loading and unloading those commands and the dev commands
+# gonna add commands later
+    
 client.run(os.getenv('EVENTTOKEN'))

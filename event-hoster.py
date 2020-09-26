@@ -50,6 +50,30 @@ async def reload_extension(ctx, extension):
     except Exception as e:
         await ctx.send(e)
         print("Extension Reload failed: {}".format(e))
+        
+@client.command()
+@commands.check(author_is_zacky)
+async def unload_extension(ctx, extension):
+    try:
+        client.unload_extension(extension)
+        msg = "Unloaded {} extension".format(extension)
+    except Exception as e:
+        msg = "Failed to unload extension {}, {}".format(extension, e)
+    
+    print(msg)
+    await ctx.send(msg)
+    
+@client.command()
+@commands.check(author_is_zacky)
+async def load_extension(ctx, extension):
+    try:
+        client.load_extension(extension)
+        msg = "Loaded {} extension".format(extension)
+    except Exception as e:
+        msg = "Failed to load extension {}, {}".format(extension, e)
+    
+    print(msg)
+    await ctx.send(msg)
 
 # Everything is in the Data and Cogs only commands here are for loading and unloading those commands and the dev commands
 # gonna add commands later

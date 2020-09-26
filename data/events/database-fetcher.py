@@ -18,7 +18,7 @@ class DatabaseFetcher(commands.Cog):
             "https://www.googleapis.com/auth/drive"
         ]
 
-        creds = ServiceAccountCredentials.from_json_keyfile_dict(keyfile_dict=literal_eval(node_or_string=urlopen(url=os.getenv('API_SHEETS_CERDSLINK')).read().decode()), scopes=scope)
+        creds = ServiceAccountCredentials.from_json_keyfile_name("ServiceAccountCreds.json", scopes=scope)
         gspread_client = gspread.authorize(creds)
         sheet = gspread_client.open("api-tutorial").sheet1
         self.client = client
@@ -51,7 +51,7 @@ class DatabaseFetcher(commands.Cog):
             
             raw_database_to_list.append(current_row_values)
 
-        await asyncio.sleep(60) # To make sure Google doesn't rate limit me
+        await asyncio.sleep(3) # To make sure Google doesn't rate limit me
         
         # Pushing the local data to the online database
         data_to_push = list()

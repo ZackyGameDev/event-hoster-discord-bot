@@ -20,12 +20,17 @@ async def on_ready():
             filelist.append(os.path.join(root,file))
 
     # And then loading them
+    blacklisted_extensions = [
+        "data.events.database-fetcher"
+    ]
+    
     for file in filelist:
         if file.endswith('.py'):
             file = file.replace('/', '.').replace('\\', '.')[:-3]
             try:
-                client.load_extension(f"{file}")
-                print(f"loaded extension: {file}")
+                if file not in blacklisted_extensions:
+                    client.load_extension(f"{file}")
+                    print(f"loaded extension: {file}")
             except Exception as e:
                 print(f"Failed to load the extension: {file}, reason: {e}`")
     

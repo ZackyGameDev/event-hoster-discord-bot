@@ -29,11 +29,11 @@ class DatabaseFetcher(commands.Cog):
         self.client.database = dict()
 
     @tasks.loop(minutes=15)
-    async def fetchdatabase(self, sheet=self.sheet):
-
+    async def fetchdatabase(self):
         print('Database fetch has started')
-
+        
         # Fetching the database
+        sheet=self.sheet
         raw_database = sheet.get_all_records()
         database = dict()
         raw_database_to_list = list()
@@ -71,9 +71,7 @@ class DatabaseFetcher(commands.Cog):
         
         self.client.database.update(database)
         
-    print('Database fetch finished')
-        
-    fetchdatabase.start()
+        print('Database fetch finished')
         
 def setup(client):
     client.add_cog(DatabaseFetcher(client))

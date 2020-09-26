@@ -82,7 +82,7 @@ class ModerationCommands(commands.Cog):
             return
         
         await member_to_kick.kick(reason=reason)
-        
+
         try:
             await ctx.send(embed=discord.Embed(
                 title=f'{member_to_kick} kicked by {ctx.author}',
@@ -90,9 +90,10 @@ class ModerationCommands(commands.Cog):
                 color=discord.Color.from_hsv(random(), 1, 1)
             ))
         except discord.Forbidden:
-            await ctx.send(f'Kicked {member_to_kick} with reason: {reason}.\nAlso give me the perms to send embeds in here sending raw content looks bland')
-        else:
-            await ctx.author.send(f'Kicked {member_to_kick} with reason: {reason}.\nAlso Come on, give me the perms to message in the server like bruh.')
+            try:
+                await ctx.send(f'Kicked {member_to_kick} with reason: {reason}.\nAlso give me the perms to send embeds in here sending raw content looks bland')
+            except:
+                await ctx.author.send(f'Kicked {member_to_kick} with reason: {reason}.\nAlso Come on, give me the perms to message in the server like bruh.')
         
     @kick.error
     async def handle_error(self, ctx, error):

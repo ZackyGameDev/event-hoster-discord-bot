@@ -31,6 +31,8 @@ async def on_ready():
                 if file not in blacklisted_extensions:
                     client.load_extension(f"{file}")
                     print(f"loaded extension: {file}")
+                else:
+                    print(f"blacklisted extension not loaded: {file}")
             except Exception as e:
                 print(f"Failed to load the extension: {file}, reason: {e}`")
     

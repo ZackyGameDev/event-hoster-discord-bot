@@ -9,7 +9,7 @@ def author_is_zacky(ctx):
 
 @client.event
 async def on_ready():
-    
+    os.system("cls")
     filelist = []
     for root, dirs, files in os.walk("data/"):
         for file in files:

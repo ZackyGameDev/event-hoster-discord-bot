@@ -38,11 +38,11 @@ class ModerationCommands(commands.Cog):
         try:
             await ctx.send(embed=discord.Embed(
                 title=f'{member_to_ban} has been Banned',
-                description=f"Reason: `{reason}``",
+                description=f"Reason: `{reason}`",
                 color=discord.Color.from_hsv(random(), 1, 1)
             ).set_author(
                 name=f'{ctx.author}',
-                icon_url=f'https://cdn.discordapp.com/{ctx.author.id}/{ctx.author.avatar}/png'
+                icon_url=f'https://cdn.discordapp.com/avatars/{ctx.author.id}/{ctx.author.avatar}.png'
             ))
         except discord.Forbidden:
             try:
@@ -90,11 +90,11 @@ class ModerationCommands(commands.Cog):
         try:
             await ctx.send(embed=discord.Embed(
                 title=f'{member_to_kick} has been Kicked',
-                description=f"Reason: `{reason}``",
+                description=f"Reason: `{reason}`",
                 color=discord.Color.from_hsv(random(), 1, 1)
             ).set_author(
                 name=f'{ctx.author}',
-                icon_url=f'https://cdn.discordapp.com/{ctx.author.id}/{ctx.author.avatar}/png'
+                icon_url=f'https://cdn.discordapp.com/avatars/{ctx.author.id}/{ctx.author.avatar}.png'
             ))
         except discord.Forbidden:
             try:

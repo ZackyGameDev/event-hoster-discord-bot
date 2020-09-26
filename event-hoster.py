@@ -36,7 +36,7 @@ async def on_ready():
             except Exception as e:
                 print(f"Failed to load the extension: {file}, reason: {e}`")
     
-    print('Commands and Extensions loaded, boot successful\n\n\n')
+    print('Commands and Extensions loaded, boot successful')
     
 @client.command()
 @commands.check(author_is_zacky)

@@ -1,8 +1,8 @@
 import discord
-from discord.ext import commands
 import os
+from discord.ext import commands
 
-client = commands.Bot(command_prefix='z!', case_insensitive=True)
+client = commands.Bot(command_prefix=('z!', '.', '!', '>', '>>>', '-'), case_insensitive=True)
 
 def author_is_zacky(ctx):
     return ctx.author.id == 625987962781433867
@@ -30,13 +30,13 @@ async def on_ready():
             try:
                 if file not in blacklisted_extensions:
                     client.load_extension(f"{file}")
-                    print(f"loaded extension: {file}")
+                    print(f"Loaded extension: {file}")
                 else:
-                    print(f"blacklisted extension not loaded: {file}")
+                    print(f"Blacklisted extension not loaded: {file}")
             except Exception as e:
                 print(f"Failed to load the extension: {file}, reason: {e}`")
     
-    print('All commands loaded, boot successful')
+    print('Commands and Extensions loaded, boot successful\n\n\n')
     
 @client.command()
 @commands.check(author_is_zacky)
@@ -44,11 +44,14 @@ async def reload_extension(ctx, extension):
     try:
         client.unload_extension(extension)
         client.load_extension(extension)
+        msg = "Reloaded {} extension.".format(extension)
+        print(msg)
+        await ctx.send(msg)
     except Exception as e:
         await ctx.send(e)
         print("Extension Reload failed: {}".format(e))
 
 # Everything is in the Data and Cogs only commands here are for loading and unloading those commands and the dev commands
 # gonna add commands later
-    
+
 client.run(open("token.txt", "r").read())

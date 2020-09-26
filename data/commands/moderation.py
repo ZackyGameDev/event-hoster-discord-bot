@@ -37,14 +37,18 @@ class ModerationCommands(commands.Cog):
         
         try:
             await ctx.send(embed=discord.Embed(
-                title=f'{member_to_ban} banned by {ctx.author}',
-                description=f"reason: {reason}",
+                title=f'{member_to_ban} has been Banned',
+                description=f"Reason: `{reason}``",
                 color=discord.Color.from_hsv(random(), 1, 1)
+            ).set_author(
+                name=f'{ctx.author}',
+                icon_url=f'https://cdn.discordapp.com/{ctx.author.id}/{ctx.author.avatar}/png'
             ))
         except discord.Forbidden:
-            await ctx.send(f'Banned {member_to_ban} with reason: {reason}.\nAlso give me the perms to send embeds in here sending raw content looks bland')
-        else:
-            await ctx.author.send(f'Banned {member_to_ban} with reason: {reason}.\nAlso Come on, give me the perms to message in the server like bruh.')
+            try:
+                await ctx.send(f'Banned {member_to_ban} with reason: {reason}.\nAlso give me the perms to send embeds in here sending raw content looks bland')
+            except:
+                await ctx.author.send(f'Banned {member_to_ban} with reason: {reason}.\nAlso Come on, give me the perms to message in the server like bruh.')
         
     @ban.error
     async def handle_error(self, ctx, error):
@@ -85,9 +89,12 @@ class ModerationCommands(commands.Cog):
 
         try:
             await ctx.send(embed=discord.Embed(
-                title=f'{member_to_kick} kicked by {ctx.author}',
-                description=f"reason: {reason}",
+                title=f'{member_to_kick} has been Kicked',
+                description=f"Reason: `{reason}``",
                 color=discord.Color.from_hsv(random(), 1, 1)
+            ).set_author(
+                name=f'{ctx.author}',
+                icon_url=f'https://cdn.discordapp.com/{ctx.author.id}/{ctx.author.avatar}/png'
             ))
         except discord.Forbidden:
             try:

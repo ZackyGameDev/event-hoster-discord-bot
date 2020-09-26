@@ -9,12 +9,17 @@ def author_is_zacky(ctx):
 
 @client.event
 async def on_ready():
+    # unnecessary console cleaup
     os.system("cls")
+    for i in range(0, 1000): print("\n")
+    
+    # getting list of all paths to extensions
     filelist = []
     for root, dirs, files in os.walk("data/"):
         for file in files:
             filelist.append(os.path.join(root,file))
 
+    # And then loading them
     for file in filelist:
         if file.endswith('.py'):
             file = file.replace('/', '.').replace('\\', '.')[:-3]
@@ -23,6 +28,7 @@ async def on_ready():
                 print(f"loaded extension: {file}")
             except Exception as e:
                 print(f"Failed to load the extension: {file}, reason: {e}`")
+    
     print('All commands loaded, boot successful')
     
 @client.command()

@@ -9,6 +9,8 @@ def author_is_zacky(ctx):
 
 @client.event
 async def on_ready():
+    id_list = {} # This will be filled in by data.events.json-parser cog later
+    
     # unnecessary console cleaup
     os.system("cls")
     for i in range(0, 1000): print("\n")

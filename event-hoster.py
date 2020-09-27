@@ -8,13 +8,7 @@ def author_is_zacky(ctx):
     return ctx.author.id == 625987962781433867
 
 @client.event
-async def on_ready():
-    id_list = {} # This will be filled in by data.events.json-parser cog later
-    
-    # unnecessary console cleaup
-    os.system("cls")
-    for i in range(0, 1000): print("\n")
-    
+async def on_ready():        
     # getting list of all paths to extensions
     filelist = []
     for root, dirs, files in os.walk("data/"):
@@ -23,7 +17,8 @@ async def on_ready():
 
     # And then loading them
     blacklisted_extensions = [
-        "data.events.database-fetcher"
+        "data.events.database-fetcher",
+        "data.commands.moderation"
     ]
     
     for file in filelist:

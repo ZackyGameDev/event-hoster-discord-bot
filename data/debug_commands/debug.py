@@ -11,7 +11,7 @@ class DebugCommands(commands.Cog):
     
     @commands.Cog.listener()
     async def on_ready(self):
-        print("Debug Commands are currently none")
+        print("Debug Commands are ACTIVE")
         
     @commands.command()
     @commands.check(author_is_zacky)

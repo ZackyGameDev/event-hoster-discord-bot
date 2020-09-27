@@ -23,6 +23,10 @@ class DatabaseFetcher(commands.Cog):
         sheet = gspread_client.open("api-tutorial").sheet1
         self.client = client
         self.sheet = sheet
+        self.fetchdatabase.start()
+
+    def cog_unload(self):
+        self.fetchdatabase.stop()
 
     @commands.Cog.listener()
     async def on_ready(self):
@@ -72,6 +76,11 @@ class DatabaseFetcher(commands.Cog):
         self.client.database.update(database)
         
         print('Database fetch finished')
+        
+    @fetchdatabase.before_loop
+    async def before_fetch_loop(self):
+        print("Checking if the client is ready to start data.events.database-fetcher : tasks.loop")
+        await self.client.wait_until_ready()
         
 def setup(client):
     client.add_cog(DatabaseFetcher(client))

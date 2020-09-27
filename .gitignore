@@ -2,6 +2,9 @@
 token.txt
 ServiceAccountCreds.json
 
+# Data Saves
+id-list.json
+
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]

@@ -15,7 +15,7 @@ def author_is_zacky(ctx) -> bool:
     return ctx.author.id == 625987962781433867
 
 def get_current_gmtime() -> str:
-    return time.strftime("%a, %d %b %Y %I:%M:%S %p %Z", time.gmtime()
+    return time.strftime("%a, %d %b %Y %I:%M:%S %p %Z", time.gmtime())
 
 def console_log(to_log:str, color="white") -> None:
     for line in to_log.split('\n'):

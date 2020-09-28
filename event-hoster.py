@@ -1,10 +1,10 @@
 import discord
 import os
 import json
+import time
 import colorama
 from discord.ext import commands
 from termcolor import cprint
-from time import gmtime, strftime
 
 client = commands.Bot(command_prefix=('z!', '.', '!', '>', '>>>', '-'), case_insensitive=True)
 client.version = "v0.0.4"

@@ -6,6 +6,7 @@ import os
 from oauth2client.service_account import ServiceAccountCredentials
 from discord.ext import commands, tasks
 from urllib.request import urlopen
+from data.custom.functions import console_log
 from ast import literal_eval
 
 class DatabaseFetcher(commands.Cog):
@@ -34,7 +35,7 @@ class DatabaseFetcher(commands.Cog):
 
     @tasks.loop(minutes=15)
     async def fetchdatabase(self):
-        print('Database fetch has started')
+        console_log('Database fetch has started', "yellow")
         
         # Fetching the database
         sheet=self.sheet
@@ -75,11 +76,11 @@ class DatabaseFetcher(commands.Cog):
         
         self.client.database.update(database)
         
-        print('Database fetch finished')
+        console_log('Database fetch finished', "green")
         
     @fetchdatabase.before_loop
     async def before_fetch_loop(self):
-        print("Checking if the client is ready to start data.events.database-fetcher : tasks.loop")
+        console_log("Checking if the client is ready to start data.events.database-fetcher : tasks.loop", "blue")
         await self.client.wait_until_ready()
         
 def setup(client):

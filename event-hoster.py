@@ -3,30 +3,17 @@ import os
 import json
 import time
 import colorama
+import sys
+
+from discord.ext.commands.errors import NoEntryPointError
+from data.custom.checks import author_is_zacky
+from data.custom.functions import read_file, console_log
 from discord.ext import commands
-from termcolor import cprint
 
 client = commands.Bot(command_prefix=('z!', '.', '!', '>', '>>>', '-'), case_insensitive=True)
 client.version = "v0.0.4"
 client.id_list = {}
 colorama.init()
-
-def author_is_zacky(ctx) -> bool:
-    return ctx.author.id == 625987962781433867
-
-def get_current_gmtime() -> str:
-    return time.strftime("%a, %d %b %Y %I:%M:%S %p %Z", time.gmtime())
-
-def console_log(to_log:str, color="white") -> None:
-    for line in to_log.split('\n'):
-        to_print = f'[{get_current_gmtime()}] {line}'
-        cprint(to_print, color)
-                         
-def read_file(filename):
-    f = open(filename)
-    content = f.read()
-    f.close()
-    return content
 
 def boot_bot(blacklisted_extensions : tuple) -> None: # i am not using the on_ready event because then the on_ready event in cogs won't work, and putting it all in a function so its looking clean
     # unecessary decoration (i like it please don't attack me)
@@ -47,11 +34,13 @@ def boot_bot(blacklisted_extensions : tuple) -> None: # i am not using the on_re
                     console_log(f"Loaded extension: {file}", "yellow")
                 else:
                     console_log(f"Blacklisted extension not loaded: {file}", "red")
+            except NoEntryPointError:
+                console_log(f"{file} has no entry point, assuming that its not an extension.", "blue")
             except Exception as e:
-                print(f"Failed to load the extension: {file}, reason: {e}`")
+                console_log(f"Failed to load the extension: {file}, reason: {sys.exc_info()[0]}, {e}`", "white", "on_red")
 
 
-boot_bot(blacklisted_extensions = ("data.events.database-fetcher"))
+boot_bot(blacklisted_extensions = json.loads(read_file("config.json"))["blacklisted_extensions"])
 @client.event
 async def on_ready():              
     console_log('~~~~~~ Commands and Extensions loaded, boot successful ~~~~~~', "green")

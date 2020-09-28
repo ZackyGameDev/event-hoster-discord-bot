@@ -19,7 +19,7 @@ def get_current_gmtime() -> str:
 
 def console_log(to_log:str, color="white") -> None:
     for line in to_log.split('\n'):
-        to_print = f'[{get_current_time()}] {line}'
+        to_print = f'[{get_current_gmtime()}] {line}'
         cprint(to_print, color)
                          
 def read_file(filename):

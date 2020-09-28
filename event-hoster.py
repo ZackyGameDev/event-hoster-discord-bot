@@ -17,6 +17,8 @@ colorama.init()
 
 def boot_bot(blacklisted_extensions : tuple) -> None: # i am not using the on_ready event because then the on_ready event in cogs won't work, and putting it all in a function so its looking clean
     # unecessary decoration (i like it please don't attack me)
+    os.system("cls")
+    os.system("clear")
     console_log(read_file("startup_ascii.txt").format(client.version), "blue")
     # getting list of all paths to extensions
     filelist = []

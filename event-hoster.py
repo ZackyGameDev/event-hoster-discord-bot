@@ -1,9 +1,10 @@
 import discord
 import os
 import json
+import colorama
 from discord.ext import commands
 from termcolor import cprint
-import colorama
+from time import gmtime, strftime
 
 client = commands.Bot(command_prefix=('z!', '.', '!', '>', '>>>', '-'), case_insensitive=True)
 client.version = "v0.0.4"
@@ -13,6 +14,14 @@ colorama.init()
 def author_is_zacky(ctx) -> bool:
     return ctx.author.id == 625987962781433867
 
+def get_current_gmtime() -> str:
+    return time.strftime("%a, %d %b %Y %I:%M:%S %p %Z", time.gmtime()
+
+def console_log(to_log:str, color="white") -> None:
+    for line in to_log.split('\n'):
+        to_print = f'[{get_current_time()}] {line}'
+        cprint(to_print, color)
+                         
 def read_file(filename):
     f = open(filename)
     content = f.read()
@@ -21,7 +30,7 @@ def read_file(filename):
 
 def boot_bot(blacklisted_extensions : tuple) -> None: # i am not using the on_ready event because then the on_ready event in cogs won't work, and putting it all in a function so its looking clean
     # unecessary decoration (i like it please don't attack me)
-    cprint(read_file("startup_ascii.txt").format(client.version), "blue")
+    console_log(read_file("startup_ascii.txt").format(client.version), "blue")
     # getting list of all paths to extensions
     filelist = []
     for root, dirs, files in os.walk("data/"):
@@ -35,9 +44,9 @@ def boot_bot(blacklisted_extensions : tuple) -> None: # i am not using the on_re
             try:
                 if file not in blacklisted_extensions:
                     client.load_extension(f"{file}")
-                    cprint(f"Loaded extension: {file}", "yellow")
+                    console_log(f"Loaded extension: {file}", "yellow")
                 else:
-                    cprint(f"Blacklisted extension not loaded: {file}", "red")
+                    console_log(f"Blacklisted extension not loaded: {file}", "red")
             except Exception as e:
                 print(f"Failed to load the extension: {file}, reason: {e}`")
 
@@ -45,8 +54,8 @@ def boot_bot(blacklisted_extensions : tuple) -> None: # i am not using the on_re
 boot_bot(blacklisted_extensions = ("data.events.database-fetcher"))
 @client.event
 async def on_ready():              
-    cprint('\nCommands and Extensions loaded, boot successful\n', "green")
-    cprint("Below are the messages from the extensions:", "cyan")
+    console_log('~~~~~~ Commands and Extensions loaded, boot successful ~~~~~~', "green")
+    console_log("~~~~~~~~ Below are the messages from the extensions ~~~~~~~~~", "cyan")
     
 @client.command()
 @commands.check(author_is_zacky)

@@ -13,7 +13,7 @@ def console_log(to_log:str, color=None, on_color=None) -> None:
     for line in to_log.split('\n'):
         to_print = f'[{time.strftime("%a, %d %b %Y %I:%M:%S %p %Z", time.gmtime())}] {line}'
         col_print(to_print, color, on_color)
-        logs.write(to_print)
+        logs.write(to_print+'\n')
     logs.close()
                         
 def read_file(filename):

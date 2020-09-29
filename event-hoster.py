@@ -7,7 +7,7 @@ import sys
 
 from discord.ext.commands.errors import NoEntryPointError
 from data.custom.checks import author_is_zacky
-from data.custom.functions import read_file, console_log
+from data.custom.functions import read_file, console_log, cprint
 from discord.ext import commands
 
 client = commands.Bot(command_prefix=('z!', '.', '!', '>', '>>>', '-'), case_insensitive=True)
@@ -19,7 +19,7 @@ def boot_bot(blacklisted_extensions : tuple) -> None: # i am not using the on_re
     # unecessary decoration (i like it please don't attack me)
     os.system("cls")
     os.system("clear")
-    console_log(read_file("startup_ascii.txt").format(client.version), "blue")
+    cprint(read_file("startup_ascii.txt").format(client.version), "yellow")
     # getting list of all paths to extensions
     filelist = []
     for root, dirs, files in os.walk("data/"):

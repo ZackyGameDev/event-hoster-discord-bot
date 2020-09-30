@@ -17,9 +17,12 @@ colorama.init()
 
 def boot_bot(blacklisted_extensions : tuple) -> None: # i am not using the on_ready event because then the on_ready event in cogs won't work, and putting it all in a function so its looking clean
     # unecessary decoration (i like it please don't attack me)
-    os.system("cls")
-    os.system("clear")
+    if sys.platform == "win32" or sys.platform == "win64":
+        os.system("cls")
+    else:
+        os.system("clear")
     cprint(read_file("startup_ascii.txt").format(client.version), "yellow")
+    
     # getting list of all paths to extensions
     filelist = []
     for root, dirs, files in os.walk("data/"):
@@ -55,11 +58,11 @@ async def reload_extension(ctx, extension):
         client.unload_extension(extension)
         client.load_extension(extension)
         msg = "Reloaded {} extension.".format(extension)
-        print(msg)
+        console_log(msg, "yellow")
         await ctx.send(msg)
     except Exception as e:
         await ctx.send(e)
-        print("Extension Reload failed: {}".format(e))
+        console_log("Extension Reload failed: {}".format(e), "white", "on_red")
         
 @client.command()
 @commands.check(author_is_zacky)
@@ -67,10 +70,14 @@ async def unload_extension(ctx, extension):
     try:
         client.unload_extension(extension)
         msg = "Unloaded {} extension".format(extension)
+        col = "yellow"
+        on_col = None
     except Exception as e:
         msg = "Failed to unload extension {}, {}".format(extension, e)
+        col = 'white'
+        on_col = 'on_red'
     
-    print(msg)
+    console_log(msg, col, on_col)
     await ctx.send(msg)
     
 @client.command()
@@ -79,10 +86,14 @@ async def load_extension(ctx, extension):
     try:
         client.load_extension(extension)
         msg = "Loaded {} extension".format(extension)
+        col = "yellow"
+        on_col = None
     except Exception as e:
         msg = "Failed to load extension {}, {}".format(extension, e)
-    
-    print(msg)
+        col = 'white'
+        on_col = 'on_red'
+
+    console_log(msg, col, on_col)
     await ctx.send(msg)
 
 # Everything is in the Data and Cogs only commands here are for loading and unloading those commands and the dev commands

@@ -27,7 +27,7 @@ class JsonParser(commands.Cog):
         console_log(f'Loaded the json data: {self.client.id_list}', "green")
         json_data_file.close()
 
-    @tasks.loop(minutes=5)
+    @tasks.loop(minutes=2)
     async def save_data_as_json(self):
         json_data_file = open("id-list.json", "w")
         json.dump(self.client.id_list, json_data_file, indent=4)

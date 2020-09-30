@@ -4,7 +4,7 @@ ServiceAccountCreds.json
 
 # Data Saves
 id-list.json
-logs.txt
+console.log
 
 # Byte-compiled / optimized / DLL files
 __pycache__/

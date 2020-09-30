@@ -49,6 +49,7 @@ boot_bot(blacklisted_extensions = json.loads(read_file("config.json"))["blacklis
 @client.event
 async def on_ready():              
     console_log('~~~~~~ Commands and Extensions loaded, boot successful ~~~~~~', "green")
+    console_log('~~~~~~~~~~~ Serving in {} Number for guilds ~~~~~~~~~~~'.format(len(client.guilds)), "green")
     console_log("~~~~~~~~ Below are the messages from the extensions ~~~~~~~~~", "cyan")
     
 @client.command()

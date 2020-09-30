@@ -24,7 +24,7 @@ class JsonParser(commands.Cog):
             json_data_file = open("id-list.json", "w+")
         json_data = json.loads(json_data_file.read())
         self.client.id_list = json_data
-        console_log(f'Loaded the json data: {self.client.id_list}', "green")
+        console_log(f'Loaded the json data: {json.dumps(self.client.id_list, indent=2, sort_keys=True)}', "green")
         json_data_file.close()
 
     @tasks.loop(minutes=2)

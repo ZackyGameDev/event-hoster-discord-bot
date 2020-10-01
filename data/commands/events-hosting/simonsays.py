@@ -6,16 +6,26 @@ from asyncio import TimeoutError
 from random import random
 import asyncio
 
+async def get_simon_says_roles(self, ctx):
+    try:
+        simon_participant_role_id = self.client.id_list['guild_setup_id_saves'][str(ctx.guild.id)]['roles']['simon_says_participant']
+        simon_disqualified_role_id = self.client.id_list['guild_setup_id_saves'][str(ctx.guild.id)]['roles']['simon_says_disqualified']
+        simon_controller_role_id = self.client.id_list['guild_setup_id_saves'][str(ctx.guild.id)]['roles']['simon_says_controller']
+
+        return simon_participant_role_id, simon_disqualified_role_id, simon_controller_role_id
+    except KeyError: # this error handling took a total of 6 hours to figure out
+        await ctx.send(embed=discord.Embed(
+            title=f"{self.emojis['crossGif']} Failed",
+            description=f"You have not yet setup this server by using the `-SimonSaysSetup` command to do that!",
+            color=discord.Color.red()
+        ).set_footer(
+            text="If you think this is an error, contact Zacky#9543"
+        ))
+
 class SimonSays(commands.Cog):
     def __init__(self, client):
         self.client = client
     
-    def get_simon_says_roles(self, guild):
-        simon_participant_role_id = self.client.id_list['guild_setup_id_saves'][str(guild.id)]['roles']['simon_says_participant']
-        simon_disqualified_role_id = self.client.id_list['guild_setup_id_saves'][str(guild.id)]['roles']['simon_says_disqualified']
-        simon_controller_role_id = self.client.id_list['guild_setup_id_saves'][str(guild.id)]['roles']['simon_says_controller']
-        
-        return simon_participant_role_id, simon_disqualified_role_id, simon_controller_role_id
     
     @commands.Cog.listener()
     async def on_ready(self):
@@ -25,6 +35,9 @@ class SimonSays(commands.Cog):
     
     @commands.command(aliases=['SimonSays', 'Simon-Says', 'ss'])
     async def simon_says(self, ctx, *, to_say):
+        simon_participant_role_id, simon_disqualified_role_id, simon_controller_role_id = await get_simon_says_roles(self, ctx)
+
+        
         if ctx.guild.get_role(self.client.id_list['guild_setup_id_saves'][str(ctx.guild.id)]['roles']['simon_says_controller']) not in ctx.author.roles:
             await ctx.send(embed=discord.Embed(
                 title=f'{self.emojis["crossGif"]} Missing Permissions!',
@@ -67,7 +80,7 @@ class SimonSays(commands.Cog):
     @commands.command(aliases=['simonkill', 'simon-kill', 'kill'])
     @commands.bot_has_guild_permissions(manage_roles=True)
     async def simon_kill(self, ctx, *to_kill : discord.Member):
-        simon_participant_role_id, simon_disqualified_role_id, simon_controller_role_id = self.get_simon_says_roles(ctx.guild)
+        simon_participant_role_id, simon_disqualified_role_id, simon_controller_role_id = await get_simon_says_roles(self, ctx)
         killed = ""
         
         if ctx.guild.get_role(simon_controller_role_id) in ctx.author.roles:
@@ -94,7 +107,7 @@ class SimonSays(commands.Cog):
     @commands.command(aliases=['simonrevive', 'simon-revive', 'revive'])
     @commands.bot_has_guild_permissions(manage_roles=True)
     async def simon_revive(self, ctx, *to_revive : discord.Member):
-        simon_participant_role_id, simon_disqualified_role_id, simon_controller_role_id = self.get_simon_says_roles(ctx.guild)
+        simon_participant_role_id, simon_disqualified_role_id, simon_controller_role_id = await get_simon_says_roles(self, ctx)
         revived = ""
         
         if ctx.guild.get_role(simon_controller_role_id) in ctx.author.roles:
@@ -120,8 +133,7 @@ class SimonSays(commands.Cog):
 
     @commands.command(aliases=['simonpackup', 'simonresetroles', 'simonreset'])
     async def simon_clear_up(self, ctx):
-        simon_participant_role_id, simon_disqualified_role_id, simon_controller_role_id = self.get_simon_says_roles(ctx.guild)
-        
+        simon_participant_role_id, simon_disqualified_role_id, simon_controller_role_id = await get_simon_says_roles(self, ctx)
         if ctx.guild.get_role(simon_controller_role_id) in ctx.author.roles:
             for mem in ctx.guild.members:
                 if ctx.guild.get_role(simon_participant_role_id) in mem.roles:
@@ -221,22 +233,7 @@ class SimonSays(commands.Cog):
         elif isinstance(error, commands.MissingPermissions):
             await ctx.send(embed=discord.Embed(title="Missing Permissions", description="Looks like you are missing out on the `Manage Roles` and `Manage Channels` Permissions to perform that operation!", color=discord.Color.red()))
         else:
-            raise error
-
-    @simon_clear_up.error
-    @simon_kill.error
-    @simon_left_alive.error
-    @simon_revive.error
-    @simon_says.error
-    async def clear_error(self, ctx, error):
-        if isinstance(error, KeyError):
-            await ctx.send(embed=discord.Embed(
-                title="Error!",
-                description="You have not setup this module for your Server by using `-SimonSaysSetup` Command yet!",
-                color=discord.Color.red()
-            ))
-        else:
-            raise error
+            raise error          
 
 def setup(client):
     client.add_cog(SimonSays(client))

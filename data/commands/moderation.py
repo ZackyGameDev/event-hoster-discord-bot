@@ -101,7 +101,7 @@ class ModerationCommands(commands.Cog):
                 await ctx.send(f'Kicked {member_to_kick} with reason: {reason}.\nAlso give me the perms to send embeds in here sending raw content looks bland')
             except:
                 await ctx.author.send(f'Kicked {member_to_kick} with reason: {reason}.\nAlso Come on, give me the perms to message in the server like bruh.')
-        
+    
     @kick.error
     async def handle_error(self, ctx, error):
         if isinstance(error, commands.Forbidden) or isinstance(error, commands.BotMissingPermissions):

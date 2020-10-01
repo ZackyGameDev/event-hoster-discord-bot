@@ -229,7 +229,7 @@ class SimonSays(commands.Cog):
     @simon_revive.error
     @simon_says.error
     async def clear_error(self, ctx, error):
-        if isinstance(KeyError):
+        if isinstance(error, KeyError):
             await ctx.send(embed=discord.Embed(
                 title="Error!",
                 description="You have not setup this module for your Server by using `-SimonSaysSetup` Command yet!",

@@ -1,7 +1,7 @@
 import discord
 import json
 from discord.ext import commands
-from data.custom.functions import get_role_from_msg, prettify_string, console_log, read_file
+from data.utils.functions import get_role_from_msg, prettify_string, console_log, read_file
 from asyncio import TimeoutError
 from random import random
 import asyncio
@@ -220,6 +220,21 @@ class SimonSays(commands.Cog):
             await ctx.send("You spent too long to reply, please try again")
         elif isinstance(error, commands.MissingPermissions):
             await ctx.send(embed=discord.Embed(title="Missing Permissions", description="Looks like you are missing out on the `Manage Roles` and `Manage Channels` Permissions to perform that operation!", color=discord.Color.red()))
+        else:
+            raise error
+
+    @simon_clear_up.error
+    @simon_kill.error
+    @simon_left_alive.error
+    @simon_revive.error
+    @simon_says.error
+    async def clear_error(self, ctx, error):
+        if isinstance(KeyError):
+            await ctx.send(embed=discord.Embed(
+                title="Error!",
+                description="You have not setup this module for your Server by using `-SimonSaysSetup` Command yet!",
+                color=discord.Color.red()
+            ))
         else:
             raise error
 

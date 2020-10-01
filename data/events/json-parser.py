@@ -3,7 +3,7 @@ import json
 
 from termcolor import cprint
 from discord.ext import commands, tasks
-from data.custom.functions import console_log, read_file
+from data.utils.functions import console_log, read_file
 
 class JsonParser(commands.Cog):
     

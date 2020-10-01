@@ -6,7 +6,7 @@ import os
 from oauth2client.service_account import ServiceAccountCredentials
 from discord.ext import commands, tasks
 from urllib.request import urlopen
-from data.custom.functions import console_log
+from data.utils.functions import console_log
 from ast import literal_eval
 
 class DatabaseFetcher(commands.Cog):

@@ -3,8 +3,8 @@ import json
 import os
 
 from discord.ext import commands
-from data.custom.functions import console_log, read_file
-from data.custom.checks import author_is_zacky
+from data.utils.functions import console_log, read_file
+from data.utils.checks import author_is_zacky
 
 class DebugCommands(commands.Cog):
     def __init__(self, client):

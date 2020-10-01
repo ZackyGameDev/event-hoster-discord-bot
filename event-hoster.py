@@ -6,8 +6,8 @@ import colorama
 import sys
 
 from discord.ext.commands.errors import NoEntryPointError
-from data.custom.checks import author_is_zacky
-from data.custom.functions import read_file, console_log, cprint
+from data.utils.checks import author_is_zacky
+from data.utils.functions import read_file, console_log, cprint
 from discord.ext import commands
 
 client = commands.Bot(command_prefix=('z!', '.', '!', '>', '>>>', '-'), case_insensitive=True)

@@ -227,7 +227,7 @@ class TicketSystem(commands.Cog):
             await ctx.send(f"<a:checkGif:760758712876400680> {category.name} is now set as the Category for Creating new tickets in!(s).")            
         
         try:
-            self.client.id_list['guild_setup_id_saves'][str(ctx.guild.id)]["ticket_system"].update(id_list_to_save)
+            self.client.id_list['guild_setup_id_saves'][str(ctx.guild.id)]["ticket_system"] = id_list_to_save
         except KeyError:
             self.client.id_list['guild_setup_id_saves'][str(ctx.guild.id)] = {
                 "ticket_system": id_list_to_save

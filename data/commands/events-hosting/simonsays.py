@@ -212,7 +212,7 @@ class SimonSays(commands.Cog):
             await ctx.send(f"<#{channel.id}> is now set as the channel for Simon Says Events!")            
             
         try:
-            self.client.id_list['guild_setup_id_saves'][str(ctx.guild.id)]["simon_says"].update(id_list_to_save)
+            self.client.id_list['guild_setup_id_saves'][str(ctx.guild.id)]["simon_says"] = id_list_to_save
         except KeyError:
             self.client.id_list['guild_setup_id_saves'][str(ctx.guild.id)] = {
                 "simon_says": id_list_to_save

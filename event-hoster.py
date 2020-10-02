@@ -102,7 +102,7 @@ async def on_command_error(ctx, error):
     if isinstance(error, commands.CommandNotFound):
         pass   # I know that these errors are automatically ignored, but the error messages might start flooding the console, which is, uhh, a big no no
     else:
-        raise error # because i don't want it to not raise any other errors
+        print(error) # because i don't want it to not raise any other errors
 
 # Everything is in the Data and Cogs only commands here are for loading and unloading those commands and the dev commands
 # gonna add commands later

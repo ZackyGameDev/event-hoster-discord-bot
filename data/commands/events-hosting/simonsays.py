@@ -181,7 +181,6 @@ class SimonSays(commands.Cog):
                     ))
                 except:
                     await ctx.send(f"<a:checkGif:760758712876400680> {role.name} is now set as the role for {prettify_string(role_to_set_for)}(s).")
-                break
     
         # Simon Says Channel
         await ctx.send(embed=discord.Embed(description="Please tell me which channel in this Server will belong to hosting Simon Says event, please mention it.", color=discord.Color.red()))

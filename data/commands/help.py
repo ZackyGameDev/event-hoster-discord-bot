@@ -50,11 +50,11 @@ Setup your server to enable ticket system.
 '''
 
 help_embeds = {
-    "\U0001F389" : discord.Embed(  # 🎉
+    "\U0001F921" : discord.Embed(  # 🤡 :clown:
         title="Simon Says Commands",
         description=help_simon_says
     ),
-    "\U0001F3AB" : discord.Embed( # 🎫
+    "\U0001F3AB" : discord.Embed( # 🎫 :ticket:
         title="Ticket System Commands",
         description=help_ticket_system
     )

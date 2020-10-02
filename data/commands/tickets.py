@@ -163,69 +163,68 @@ class TicketSystem(commands.Cog):
         def wait_for_reply_check(m):
             return m.author == ctx.message.author and m.channel == ctx.message.channel
         
-        while True:
-            await ctx.send("Please tell me which role in this Server will belong to Ticket System Staff (the users that will have access to view all tickets), Either mention it, or just Tell me the name of the role")
-            message = await self.client.wait_for('message', check=wait_for_reply_check, timeout=120)
-            
-            if message.content.startswith("<@&"):
-                role_id = int(message.content[3:-1])
-                role = message.guild.get_role(role_id)
-            else:
-                for role in message.guild.roles:
-                    if role.name == message.content:
-                        break
-
-            if role == None:
-                await ctx.send('Failed to recognise role (perhaps it doesn\'t exist?), please **only** tell me the role you would like to use (name should be case-sensitive)')
-                continue
+        # Getting roles
+        await ctx.send(embed=discord.Embed(description="Please tell me which role in this Server will belong to Ticket System Staff (the users that will have access to view all tickets), Either mention it, or just Tell me the name of the role",color=discord.Color.from_hsv(random(), 1, 1)))
+        message = await self.client.wait_for('message', check=wait_for_reply_check, timeout=120)
         
-            if ctx.message.author.roles[-1].position <= role.position:
-                await ctx.send("<a:crossGif:760758713777913876> That role is higher than your highest role!")
-            elif ctx.guild.get_member(self.client.user.id).roles[-1].position <= role.position:
-                await ctx.send("<a:crossGif:760758713777913876> My highest role is lower then that role!")
-            else:
-                id_list_to_save['roles']['ticket_system_staff'] = role.id
-                try:
-                    await ctx.send(embed=discord.Embed(
-                        title="<a:checkGif:760758712876400680> Success", 
-                        description=f"<@&{role.id}> is now set as the role for Staff/Users that will have access to see all the tickets <a:checkGif:760758712876400680> ",
-                        color=discord.Color.green()
-                    ))
-                except:
-                    await ctx.send(f"<a:checkGif:760758712876400680> {role.name} is now set as the role for Staff/Users that will have access to see all the tickets.")
-                break
-    
-        # Tickets Category
-        while True:
-            await ctx.send("Please tell me in which category I need to add the new tickets to. Just tell me the name of it.")
-            message = await self.client.wait_for('message', check=wait_for_reply_check, timeout=120)
-            
-            category = None
-            for category in ctx.guild.categories:
-                if category.name.upper() == message.content.upper():
+        if message.content.startswith("<@&"):
+            role_id = int(message.content[3:-1])
+            role = message.guild.get_role(role_id)
+        else:
+            for role in message.guild.roles:
+                if role.name == message.content:
                     break
-                else:
-                    category = None
 
-            if category == None :
-                await ctx.send(embed=discord.Embed(
-                    title=f"{self.emojis['crossGif']} Failed",
-                    description="Please make sure that you are sending me the exact and correct name of the category. (this is case sensitive!)",
-                    color=discord.Color.red()
-                ))
-                continue
-
-            id_list_to_save['categories']['tickets_category'] = category.id
-            
+        if role == None:
+            await ctx.send(embed=discord.Embed(
+                title='Failed', 
+                description='Failed to recognise role (perhaps it doesn\'t exist?), please **only** tell me the role you would like to use (name should be case-sensitive)',
+                color=discord.Color.red()
+            ))
+                
+        if ctx.message.author.roles[-1].position <= role.position:
+            await ctx.send(embed=discord.Embed(description="<a:crossGif:760758713777913876> That role is higher than your highest role!",color=discord.Color.red()))
+        elif ctx.guild.get_member(self.client.user.id).roles[-1].position <= role.position:
+            await ctx.send(embed=discord.Embed(description="<a:crossGif:760758713777913876> My highest role is lower then that role!",color=discord.Color.red()))
+        else:
+            id_list_to_save['roles']['ticket_system_staff'] = role.id
             try:
                 await ctx.send(embed=discord.Embed(
                     title="<a:checkGif:760758712876400680> Success", 
-                    description=f"{category.name} is now set as the Category for Creating new tickets in! <a:checkGif:760758712876400680> ",
+                    description=f"<@&{role.id}> is now set as the role for Staff/Users that will have access to see all the tickets <a:checkGif:760758712876400680> ",
                     color=discord.Color.green()
                 ))
             except:
-                await ctx.send(f"<a:checkGif:760758712876400680> {category.name} is now set as the Category for Creating new tickets in!(s).")            
-            break
+                await ctx.send(f"<a:checkGif:760758712876400680> {role.name} is now set as the role for Staff/Users that will have access to see all the tickets.")
+
+        # Tickets Category
+        await ctx.send(embed=discord.Embed(description="Please tell me in which category I need to add the new tickets to. Just tell me the name of it.",color=discord.Color.from_hsv(random(), 1, 1)))
+        message = await self.client.wait_for('message', check=wait_for_reply_check, timeout=120)
+        
+        category = None
+        for category in ctx.guild.categories:
+            if category.name.upper() == message.content.upper():
+                break
+            else:
+                category = None
+
+        if category == None :
+            await ctx.send(embed=discord.Embed(
+                title=f"{self.emojis['crossGif']} Failed",
+                description="Please make sure that you are sending me the exact and correct name of the category. (this is case sensitive!)",
+                color=discord.Color.red()
+            ))
+
+        id_list_to_save['categories']['tickets_category'] = category.id
+        
+        try:
+            await ctx.send(embed=discord.Embed(
+                title="<a:checkGif:760758712876400680> Success", 
+                description=f"{category.name} is now set as the Category for Creating new tickets in! <a:checkGif:760758712876400680> ",
+                color=discord.Color.green()
+            ))
+        except:
+            await ctx.send(f"<a:checkGif:760758712876400680> {category.name} is now set as the Category for Creating new tickets in!(s).")            
         
         try:
             self.client.id_list['guild_setup_id_saves'][str(ctx.guild.id)]["ticket_system"].update(id_list_to_save)

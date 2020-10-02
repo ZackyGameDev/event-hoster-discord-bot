@@ -150,68 +150,65 @@ class SimonSays(commands.Cog):
             return m.author == ctx.message.author and m.channel == ctx.message.channel
         
         for role_to_set_for in ('simon_says_participant', 'simon_says_controller', 'simon_says_disqualified'):
-            while True:
-                await ctx.send("Please tell me which role in this Server will belong to {}(s), Either mention it, or just Tell me the name of the role".format(role_to_set_for.replace("_", " ").capitalize()))
-                message = await self.client.wait_for('message', check=wait_for_reply_check, timeout=120)
-                
-                if message.content.startswith("<@&"):
-                    role_id = int(message.content[3:-1])
-                    role = message.guild.get_role(role_id)
-                else:
-                    for role in message.guild.roles:
-                        if role.name == message.content:
-                            break
-    
-                if role == None:
-                    await ctx.send('Failed to recognise role (perhaps it doesn\'t exist?), please **only** tell me the role you would like to use (name should be case-sensitive)')
-                    continue
-            
-                if ctx.message.author.roles[-1].position <= role.position:
-                    await ctx.send("<a:crossGif:760758713777913876> That role is higher than your highest role!")
-                elif ctx.guild.get_member(self.client.user.id).roles[-1].position <= role.position:
-                    await ctx.send("<a:crossGif:760758713777913876> My highest role is lower then that role!")
-                else:
-                    id_list_to_save['roles'][role_to_set_for] = role.id
-                    try:
-                        await ctx.send(embed=discord.Embed(
-                            title="<a:checkGif:760758712876400680> Success", 
-                            description=f"<@&{role.id}> is now set as the role for {role_to_set_for.replace('_', ' ').capitalize()}(s) <a:checkGif:760758712876400680> ",
-                            color=discord.Color.green()
-                        ))
-                    except:
-                        await ctx.send(f"<a:checkGif:760758712876400680> {role.name} is now set as the role for {prettify_string(role_to_set_for)}(s).")
-                    break
-        
-        # Simon Says Channel
-        while True:
-            await ctx.send("Please tell me which channel in this Server will belong to hosting Simon Says event, please mention it.")
+            await ctx.send(embed=discord.Embed(description="Please tell me which role in this Server will belong to {}(s), Either mention it, or just Tell me the name of the role".format(role_to_set_for.replace("_", " ").capitalize()), color=discord.Color.from_hsv(random(), 1, 1)))
             message = await self.client.wait_for('message', check=wait_for_reply_check, timeout=120)
             
-            if message.content.startswith("<#"):
-                channel_id = int(message.content[2:-1])
-                channel = self.client.get_channel(channel_id)
+            if message.content.startswith("<@&"):
+                role_id = int(message.content[3:-1])
+                role = message.guild.get_role(role_id)
             else:
-                await ctx.send(embed=discord.Embed(
-                    title=f"{self.emojis['crossGif']} Failed",
-                    description="Please **mention** the channel you would like to use for hosting Simon Says events! (e.g. #simon-says)",
-                    color=discord.Color.red()
-                ))
-                continue
+                for role in message.guild.roles:
+                    if role.name == message.content:
+                        break
 
-            if channel == None:
-                await ctx.send('Failed to recognise channel (perhaps it doesn\'t exist in this server? or perhaps I don\'t have to permissions to see it?), please **only** tell me the channel you would like to use')
-                continue
+            if role == None:
+                await ctx.send(embed=discord.Embed(title='Failed!', description='Failed to recognise role (perhaps it doesn\'t exist?), please **only** tell me the role you would like to use (name should be case-sensitive)', color=discord.Color.from_hsv(random(), 1, 1)))
+                return
+        
+            if ctx.message.author.roles[-1].position <= role.position:
+                await ctx.send(embed=discord.Embed(description="<a:crossGif:760758713777913876> That role is higher than your highest role! or it doesn't exist", color=discord.Color.red()))
+            elif ctx.guild.get_member(self.client.user.id).roles[-1].position <= role.position:
+                await ctx.send(embed=discord.Embed(description="<a:crossGif:760758713777913876> My highest role is lower then that role! or it doesn't exist", color=discord.Color.red()))
+            else:
+                id_list_to_save['roles'][role_to_set_for] = role.id
+                try:
+                    await ctx.send(embed=discord.Embed(
+                        title="<a:checkGif:760758712876400680> Success", 
+                        description=f"<@&{role.id}> is now set as the role for {role_to_set_for.replace('_', ' ').capitalize()}(s) <a:checkGif:760758712876400680> ",
+                        color=discord.Color.green()
+                    ))
+                except:
+                    await ctx.send(f"<a:checkGif:760758712876400680> {role.name} is now set as the role for {prettify_string(role_to_set_for)}(s).")
+                break
+    
+        # Simon Says Channel
+        await ctx.send(embed=discord.Embed(description="Please tell me which channel in this Server will belong to hosting Simon Says event, please mention it.", color=discord.Color.red()))
+        message = await self.client.wait_for('message', check=wait_for_reply_check, timeout=120)
+        
+        if message.content.startswith("<#"):
+            channel_id = int(message.content[2:-1])
+            channel = self.client.get_channel(channel_id)
+        else:
+            await ctx.send(embed=discord.Embed(
+                title=f"{self.emojis['crossGif']} Failed",
+                description="Please **mention** the channel you would like to use for hosting Simon Says events! (e.g. #simon-says)",
+                color=discord.Color.red()
+            ))
+            return
 
-            id_list_to_save['channels']['simon_says_channel'] = channel.id
-            try:
-                await ctx.send(embed=discord.Embed(
-                    title="<a:checkGif:760758712876400680> Success", 
-                    description=f"<#{channel.id}> is now set as the channel for Simon Says Events! <a:checkGif:760758712876400680> ",
-                    color=discord.Color.green()
-                ))
-            except:
-                await ctx.send(f"<#{channel.id}> is now set as the channel for Simon Says Events!")      
-            break      
+        if channel == None:
+            await ctx.send(embed=discord.Embed(description='Failed to recognise channel (perhaps it doesn\'t exist in this server? or perhaps I don\'t have to permissions to see it?), please **only** tell me the channel you would like to use', color=discord.Color.red()))
+            return
+
+        id_list_to_save['channels']['simon_says_channel'] = channel.id
+        try:
+            await ctx.send(embed=discord.Embed(
+                title="<a:checkGif:760758712876400680> Success", 
+                description=f"<#{channel.id}> is now set as the channel for Simon Says Events! <a:checkGif:760758712876400680> ",
+                color=discord.Color.green()
+            ))
+        except:
+            await ctx.send(f"<#{channel.id}> is now set as the channel for Simon Says Events!")            
             
         try:
             self.client.id_list['guild_setup_id_saves'][str(ctx.guild.id)]["simon_says"].update(id_list_to_save)

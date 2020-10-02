@@ -17,7 +17,7 @@ async def channel_is_ticket(self, ctx):
     if channel_is_ticket == None or channel_is_ticket == False:
         await ctx.send(embed=discord.Embed(
             title="Illegal Command!",
-            description="This is not a ticket, hence cannot be deleted with this command!",
+            description="This is not a ticket, hence cannot be closed with this command!",
             color=discord.Color.red()
         ).set_footer(
             text="if you think this is a mistake, please delete this channel manually"
@@ -148,8 +148,8 @@ class TicketSystem(commands.Cog):
             except TimeoutError:
                 await ctx.channel.delete(reason="Ticket closed by {}, reason: `{}`".format(ctx.author, reason))
                 await self.client.get_user(creator_id).send(embed=discord.Embed(
-                    title="Your Ticket was deleted",
-                    description=f"Deleted by {ctx.author}\nreason: {reason}",
+                    title="Your Ticket was closed",
+                    description=f"Closed by {ctx.author},\nReason: `{reason}``",
                     color=discord.Color.from_hsv(random(), 1, 1)
                 ))
     

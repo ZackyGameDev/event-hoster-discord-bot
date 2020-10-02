@@ -167,8 +167,10 @@ class SimonSays(commands.Cog):
         
             if ctx.message.author.roles[-1].position <= role.position:
                 await ctx.send(embed=discord.Embed(description="<a:crossGif:760758713777913876> That role is higher than your highest role! or it doesn't exist", color=discord.Color.red()))
+                return
             elif ctx.guild.get_member(self.client.user.id).roles[-1].position <= role.position:
                 await ctx.send(embed=discord.Embed(description="<a:crossGif:760758713777913876> My highest role is lower then that role! or it doesn't exist", color=discord.Color.red()))
+                return
             else:
                 id_list_to_save['roles'][role_to_set_for] = role.id
                 try:

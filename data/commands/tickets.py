@@ -1,8 +1,29 @@
 import discord
 import json
+from asyncio import TimeoutError 
 from discord.ext import commands
 from data.utils.functions import prettify_string, read_file
 from random import random
+
+async def channel_is_ticket(self, ctx):
+    channel_is_ticket = None
+    async for entry in ctx.guild.audit_logs(limit=250, user=self.client.user, action=discord.AuditLogAction.channel_create):
+        if ctx.channel.id == entry.target.id:
+            channel_is_ticket = True
+            break
+        else:
+            channel_is_ticket = False
+
+    if channel_is_ticket == None or channel_is_ticket == False:
+        await ctx.send(embed=discord.Embed(
+            title="Illegal Command!",
+            description="This is not a ticket, hence cannot be deleted with this command!",
+            color=discord.Color.red()
+        ).set_footer(
+            text="if you think this is a mistake, please delete this channel manually"
+        ))
+    
+    return channel_is_ticket
 
 async def get_ticket_category_and_role(self, ctx):
     try:
@@ -66,6 +87,61 @@ class TicketSystem(commands.Cog):
             name=f'{ctx.author}',
             icon_url=f'https://cdn.discordapp.com/avatars/{ctx.author.id}/{ctx.author.avatar}.png'
         ), delete_after=500)
+
+    @commands.command(aliases=["add", "adduser", "add-user", "add_user", "add_role", "add-role", "addrole"])
+    async def add_user_or_role(self, ctx, role_or_user):
+        if await channel_is_ticket(self, ctx) == True:
+            try:
+                to_add_id = int(role_or_user[:-1][len(role_or_user)-19:])
+            except:
+                await ctx.send("Do that again, but actually @mention the role/user this time to add here")
+            if "&" in role_or_user:
+                to_add = ctx.guild.get_role(to_add_id)
+            else:
+                to_add = self.client.get_user(to_add_id)
+            await ctx.channel.set_permissions(to_add, read_messages=True)
+            await ctx.send(embed=discord.Embed(
+                title="Success!",
+                description="I have added {} to this ticket!".format(role_or_user),
+                color=discord.Color.green()
+            ).set_author(
+                name=f'{ctx.author}',
+                icon_url=f'https://cdn.discordapp.com/avatars/{ctx.author.id}/{ctx.author.avatar}.png'
+            ))
+
+    @commands.command(aliases=["remove", "removeuser", "remove-user", "remove_user", "remove_role", "remove-role", "removerole"])
+    async def remove_user_or_role(self, ctx, role_or_user):
+        if await channel_is_ticket(self, ctx) == True:
+            try:
+                to_remove_id = int(role_or_user[:-1][len(role_or_user)-19:])
+            except:
+                await ctx.send("Do that again, but actually @mention the role/user this time to remove from here")
+            if "&" in role_or_user:
+                to_remove = ctx.guild.get_role(to_remove_id)
+            else:
+                to_remove = self.client.get_user(to_remove_id)
+            await ctx.channel.set_permissions(to_remove, read_messages=False)
+            await ctx.send(embed=discord.Embed(
+                title="Success!",
+                description="I have removed {} from this ticket!".format(role_or_user),
+                color=discord.Color.blue()
+            ).set_author(
+                name=f'{ctx.author}',
+                icon_url=f'https://cdn.discordapp.com/avatars/{ctx.author.id}/{ctx.author.avatar}.png'
+            ))
+    
+    @commands.command(aliases=["ticket_close", "closeticket", "close-ticket", "ticketclose", "ticket-close", "close"])
+    async def close_ticket(self, ctx):
+        if await channel_is_ticket(self, ctx):
+            def wait_for_deny(message):
+                return message.channel == ctx.channel
+            
+            try:
+                await ctx.send(embed=discord.Embed(title="Closing ticket!", description="This ticket will be closed in **10 seconds**!\nIf you think this is a mistake, please send any message in this ticket!", color=discord.Color.blue()))
+                message = await self.client.wait_for('message', check=wait_for_deny, timeout=10)
+                await ctx.send("The deletion of this ticket has been stopped.")
+            except TimeoutError:
+                await ctx.channel.delete(reason="Ticket closed by {}".format(ctx.author))
     
     @commands.command(aliases=["ticketSystemSetup", "ticket-system-setup"])
     async def ticket_system_setup(self, ctx):

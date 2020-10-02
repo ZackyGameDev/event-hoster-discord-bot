@@ -1,4 +1,4 @@
-# -*- coding: UTF-8 -*-
+﻿# -*- coding: UTF-8 -*-
 
 import discord
 from discord.ext import commands
@@ -14,7 +14,7 @@ e.g. `-SimonSays person below will be killed!`
 Disqualify Simon Says Participant(s).
 e.g. `-SimonKill @PersonWhoFailed @AlsoAPersonWhoFailed`
 
-`simon_revive`:
+`SimonRevive`:
 Revive Simon Says disqualified Participant(s).
 e.g. `-SimonRevive @PersonWhoGetsAChance @another_person69`
 
@@ -27,10 +27,36 @@ Removes the Simon Says Participant and Simon Says Disqualified roles from every 
 `SimonSaysSetup`:
 Setups your server to hold Simon Says Events.
 """
+
+help_ticket_system = '''
+`New [reason]`:
+Create a new ticket, reason is optional.
+e.g. `-new Why is this bot so unstable??? HELP`
+
+`Add @<Role or User>`:
+Add a role or a user to the private ticket.
+e.g. `-add @DemoSupportMan`
+
+`Remove @<Role or User>`:
+Some as `-add` but removes the user/role instead.
+e.g. `-remove @AllBots`
+
+`Close [reason]`:
+Close the current ticket with an optional reason.
+e.g. `-close Solved this issue in #faq`
+
+`TicketSystemSetup`:
+Setup your server to enable ticket system.
+'''
+
 help_embeds = {
     "\U0001F389" : discord.Embed(  # 🎉
         title="Simon Says Commands",
         description=help_simon_says
+    ),
+    "\U0001F3AB" : discord.Embed( # 🎫
+        title="Ticket System Commands",
+        description=help_ticket_system
     )
 }
 
@@ -45,8 +71,8 @@ class HelpCommand(commands.Cog):
         for emoji in help_embeds:
             await help_message.add_reaction(emoji)
         while True:
-            def check(reaction, user):
-                return user == ctx.message.author
+            def check(reaction, user, help_message=help_message):
+                return user == ctx.message.author and reaction.message.id == help_message.id
 
             try:
                 reaction, user = await self.client.wait_for('reaction_add', timeout=600, check=check)
@@ -54,9 +80,11 @@ class HelpCommand(commands.Cog):
                     embed=help_embeds[str(reaction.emoji)]
                 except KeyError:
                     await reaction.remove(user)
+                    continue
                 embed.color = discord.Color.from_hsv(random(), 1, 1)
                 embed.set_footer(text="Please react below on one of the already reacted emojis for accessing categories")
                 await help_message.edit(embed=embed)
+                await reaction.remove(user)
             except TimeoutError:
                 break
     

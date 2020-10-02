@@ -70,7 +70,7 @@ class TicketSystem(commands.Cog):
             tickets_count = 0
         self.client.id_list['tickets_count'][str(ctx.guild.id)] += 1
         
-        new_ticket = await new_tickets_category.create_text_channel(name=f"ticket-{tickets_count}", overwrites=new_ticket_channel_overwrites, reason=reason)
+        new_ticket = await new_tickets_category.create_text_channel(name=f"ticket-{tickets_count}", overwrites=new_ticket_channel_overwrites, reason=f'{reason} id:{ctx.author.id}')
         await new_ticket.send(embed=discord.Embed(
             description=f"Reason: `{reason}`",
             color=discord.Color.from_hsv(random(), 1, 1)
@@ -131,17 +131,27 @@ class TicketSystem(commands.Cog):
             ))
     
     @commands.command(aliases=["ticket_close", "closeticket", "close-ticket", "ticketclose", "ticket-close", "close"])
-    async def close_ticket(self, ctx):
-        if await channel_is_ticket(self, ctx):
+    async def close_ticket(self, ctx, *, reason=None):
+        if await channel_is_ticket(self, ctx) == True:
             def wait_for_deny(message):
                 return message.channel == ctx.channel
+
+            async for entry in ctx.guild.audit_logs(limit=250, user=self.client.user, action=discord.AuditLogAction.channel_create):
+                if ctx.channel.id == entry.target.id:
+                    creator_id = int(entry.reason[-18:])
+                    break
             
             try:
                 await ctx.send(embed=discord.Embed(title="Closing ticket!", description="This ticket will be closed in **10 seconds**!\nIf you think this is a mistake, please send any message in this ticket!", color=discord.Color.blue()))
                 message = await self.client.wait_for('message', check=wait_for_deny, timeout=10)
                 await ctx.send("The deletion of this ticket has been stopped.")
             except TimeoutError:
-                await ctx.channel.delete(reason="Ticket closed by {}".format(ctx.author))
+                await ctx.channel.delete(reason="Ticket closed by {}, reason: `{}`".format(ctx.author, reason))
+                await self.client.get_user(creator_id).send(embed=discord.Embed(
+                    title="Your Ticket was deleted",
+                    description=f"Deleted by {ctx.author}\nreason: {reason}",
+                    color=discord.Color.from_hsv(random(), 1, 1)
+                ))
     
     @commands.command(aliases=["ticketSystemSetup", "ticket-system-setup"])
     async def ticket_system_setup(self, ctx):

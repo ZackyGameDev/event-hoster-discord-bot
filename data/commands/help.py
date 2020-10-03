@@ -77,15 +77,15 @@ Same as `-Meme` but sends the memes in bulk and straight to your DM's, you can o
 '''
 
 help_embeds = {
-    "\U0001F389" : discord.Embed(  # 🎉
+    "\U0001F921" : discord.Embed(  # 🤡 :clown:
         title="Simon Says Commands",
         description=help_simon_says
     ),
-    "\U0001F39F" : discord.Embed( # 🎟 
+    "\U0001F39F" : discord.Embed( # 🎟 :tickets:
         title="Ticket System Commands",
         description=help_ticket_system
     ),
-    "\U0001F3AE" : discord.Embed( # 🎮
+    "\U0001F3AE" : discord.Embed( # 🎮 :video_game:
         title="Fun Commands",
         description=help_fun_commands
     )

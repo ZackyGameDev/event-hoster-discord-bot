@@ -8,9 +8,9 @@ import sys
 from discord.ext.commands.errors import NoEntryPointError
 from data.utils.checks import author_is_zacky
 from data.utils.functions import read_file, console_log, cprint
-from discord.ext import commands
+from discord.ext import commands, tasks
 
-client = commands.Bot(command_prefix=('z!', '.', '!', '>', '>>>', '-'), case_insensitive=True)
+client = commands.Bot(command_prefix=('z!', '.', '!', '>', '-'), case_insensitive=True)
 client.version = "v0.0.4"
 client.id_list = {}
 colorama.init()
@@ -51,6 +51,7 @@ async def on_ready():
     console_log('~~~~~~ Commands and Extensions loaded, boot successful ~~~~~~', "green")
     console_log('~~~~~~~~~~~ Serving in {} Number for guilds ~~~~~~~~~~~'.format(len(client.guilds)), "green")
     console_log("~~~~~~~~ Below are the messages from the extensions ~~~~~~~~~", "cyan")
+    change_the_status.start()
     
 @client.command()
 @commands.check(author_is_zacky)
@@ -102,9 +103,13 @@ async def on_command_error(ctx, error):
     if isinstance(error, commands.CommandNotFound):
         pass   # I know that these errors are automatically ignored, but the error messages might start flooding the console, which is, uhh, a big no no
     else:
-        print(error) # because i don't want it to not raise any other errors
+        console_log(error, "white", "on_red") # because i don't want it to not raise any other errors
+
+@tasks.loop(seconds=30)
+async def change_the_status():
+    game = discord.Game(f"on {len(client.guilds)} Discord servers")
+    await client.change_presence(status=discord.Status.online, activity=game)
 
 # Everything is in the Data and Cogs only commands here are for loading and unloading those commands and the dev commands
 # gonna add commands later
-
 client.run(read_file("token.txt"))

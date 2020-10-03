@@ -149,7 +149,7 @@ class TicketSystem(commands.Cog):
                 await ctx.channel.delete(reason="Ticket closed by {}, reason: `{}`".format(ctx.author, reason))
                 await self.client.get_user(creator_id).send(embed=discord.Embed(
                     title="Your Ticket was closed",
-                    description=f"Closed by {ctx.author},\nReason: `{reason}``",
+                    description=f"Closed by {ctx.author},\nReason: `{reason}`",
                     color=discord.Color.from_hsv(random(), 1, 1)
                 ))
     

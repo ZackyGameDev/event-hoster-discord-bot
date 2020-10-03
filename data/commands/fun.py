@@ -1,3 +1,5 @@
+# -*- coding: UTF-8 -*-
+
 import discord
 import json
 import asyncio
@@ -10,6 +12,7 @@ class FunCommands(commands.Cog):
     def __init__(self, client):
         self.client = client
         self.eight_ball_responses = read_file("data/commands/8ball-responses.txt").split('\n')
+
         # Initialize subreddit
         reddit_creds = json.loads(read_file("reddit_creds.json"))
         self.reddit = Reddit(

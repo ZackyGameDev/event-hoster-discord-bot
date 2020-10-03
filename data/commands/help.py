@@ -5,6 +5,12 @@ from discord.ext import commands
 from asyncio import TimeoutError
 from random import random
 
+initial_description = '''
+:clown: **Simon Says Event Commands**
+:tickets: **Ticket System Commands**
+:video_game: **Fun Commands**
+'''
+
 help_simon_says = """
 `SimonSays`:
 Say Something as Simon in the Simon Says Events Channel.
@@ -49,14 +55,39 @@ e.g. `-close Solved this issue in #faq`
 Setup your server to enable ticket system.
 '''
 
+help_fun_commands = '''
+`8Ball <TO PREDICT>`:
+Predicts the outcome of your statement
+
+`RoleDice`: 
+Roles a dice a tells the result
+
+`FlipCoin`:
+Flip a coin
+
+`Meme`:
+Sends a Meme
+
+`DankMeme`:
+Sends a Meme from dankmemes subreddit
+
+`sendMemes <amount>`:
+Same as `-Meme` but sends the memes in bulk and straight to your DM's, you can optionally say "dank" at the end to have the memes from dankmemes subreddit
+`for e.g. -sendMemes 10 dank`
+'''
+
 help_embeds = {
     "\U0001F389" : discord.Embed(  # 🎉
         title="Simon Says Commands",
         description=help_simon_says
     ),
-    "\U0001F3AB" : discord.Embed( # 🎫
+    "\U0001F39F" : discord.Embed( # 🎟 
         title="Ticket System Commands",
         description=help_ticket_system
+    ),
+    "\U0001F3AE" : discord.Embed( # 🎮
+        title="Fun Commands",
+        description=help_fun_commands
     )
 }
 
@@ -67,7 +98,7 @@ class HelpCommand(commands.Cog):
     
     @commands.command()
     async def help(self, ctx):
-        help_message = await ctx.send(embed=discord.Embed(description="Please React on one of the reactions on this message below", color=discord.Color.blue()))
+        help_message = await ctx.send(embed=discord.Embed(title="React Below For Help", description=initial_description, color=discord.Color.gold()))
         for emoji in help_embeds:
             await help_message.add_reaction(emoji)
         while True:

@@ -88,6 +88,21 @@ class TicketSystem(commands.Cog):
             icon_url=f'https://cdn.discordapp.com/avatars/{ctx.author.id}/{ctx.author.avatar}.png'
         ), delete_after=500)
 
+    @new_ticket.error
+    async def clear_error(self, ctx, error):
+        if isinstance(error, commands.MissingPermissions):
+            await ctx.send(embed=discord.Embed(
+                title="Missing Permissions!",
+                description="I Am missing permissions to create channel!",
+                color=discord.Color.red()
+            ))
+        else:
+            await ctx.send(embed=discord.Embed(
+                title="Something went wrong",
+                description="Please report the following thing to Zacky#9543:\n`{}`".format(str(error)),
+                color=discord.Color.red()
+            ))
+
     @commands.command(aliases=["add", "adduser", "add-user", "add_user", "add_role", "add-role", "addrole"])
     async def add_user_or_role(self, ctx, role_or_user):
         if await channel_is_ticket(self, ctx) == True:
@@ -152,6 +167,21 @@ class TicketSystem(commands.Cog):
                     description=f"Closed by {ctx.author},\nReason: `{reason}`",
                     color=discord.Color.from_hsv(random(), 1, 1)
                 ))
+
+    @close_ticket.error
+    async def clear_error(self, ctx, error):
+        if isinstance(error, commands.MissingPermissions):
+            await ctx.send(embed=discord.Embed(
+                title="Missing Permissions!",
+                description="I Am missing permissions to delete this channel!",
+                color=discord.Color.red()
+            ))
+        else:
+            await ctx.send(embed=discord.Embed(
+                title="Something went wrong",
+                description="Please report the following thing to Zacky#9543:\n`{}`".format(str(error)),
+                color=discord.Color.red()
+            ))
     
     @commands.command(aliases=["ticketSystemSetup", "ticket-system-setup"])
     async def ticket_system_setup(self, ctx):

@@ -11,7 +11,7 @@ from data.utils.functions import read_file, console_log, cprint
 from discord.ext import commands, tasks
 
 client = commands.Bot(command_prefix=('z!', '.', '!', '>', '-'), case_insensitive=True)
-client.version = "v0.0.4"
+client.version = "v0.0.6"
 client.id_list = {}
 colorama.init()
 
@@ -103,13 +103,74 @@ async def on_command_error(ctx, error):
     if isinstance(error, commands.CommandNotFound):
         pass   # I know that these errors are automatically ignored, but the error messages might start flooding the console, which is, uhh, a big no no
     else:
-        console_log(error, "white", "on_red") # because i don't want it to not raise any other errors
+        console_log(str(error), "white", "on_red") # because i don't want it to not raise any other errors
 
 @tasks.loop(seconds=30)
 async def change_the_status():
     game = discord.Game(f"on {len(client.guilds)} Discord servers")
     await client.change_presence(status=discord.Status.online, activity=game)
 
-# Everything is in the Data and Cogs only commands here are for loading and unloading those commands and the dev commands
-# gonna add commands later
+@client.command()
+async def ping(ctx):
+    start = time.perf_counter()
+    message = await ctx.send(embed=discord.Embed(
+        description="Calculating Ping...",
+        color=discord.Color.red()
+    ))
+    end = time.perf_counter()
+    duration = (end - start) * 1000
+    await message.edit(embed=discord.Embed(
+        title='Response Delay: {:.2f}ms'.format(duration) + f"\nWebsocket Latency: {round(client.latency*1000)}ms",
+        color=discord.Color.green()
+    ))
+
+@client.command()
+async def report(ctx, *, to_report):
+    await ctx.send(embed=discord.Embed(
+        title="Bug Reported",
+        description=f'The bug has been reported to my creator, which says:```{to_report}```',
+        color=discord.Color.green()
+    ).set_footer(
+        text="Thank you for reporting and making me a better bot"
+    ))
+
+    await client.get_channel(json.loads(read_file("config.json"))["bug_reports_channel_id"]).send(embed=discord.Embed(
+        title=f"Bug Report",
+        description=f"```{to_report}```",
+        color=discord.Color.red()
+    ).set_author(
+        name=f'{ctx.author}',
+        icon_url=f'https://cdn.discordapp.com/avatars/{ctx.author.id}/{ctx.author.avatar}.png'
+    ))
+
+@client.command()
+async def botinfo(ctx):
+    await ctx.send(embed=discord.Embed(
+        title="Bot info",
+        description=json.loads(read_file("config.json"))["bot_info"],
+        color=discord.Color.gold()
+    ).set_author(
+        name=f'{ctx.author}',
+        icon_url=f'https://cdn.discordapp.com/avatars/{ctx.author.id}/{ctx.author.avatar}.png'
+    ))
+
+@client.command()
+async def suggest(ctx, *, to_suggest):
+    await ctx.send(embed=discord.Embed(
+        title="Suggestion submitted",
+        description=f'The suggestion has been submitted to my creator, which says:```{to_suggest}```',
+        color=discord.Color.green()
+    ).set_footer(
+        text="Thank you for reporting and making me a better bot"
+    ))
+
+    await client.get_channel(json.loads(read_file("config.json"))["suggestions_channel_id"]).send(embed=discord.Embed(
+        title=f"Suggestion",
+        description=f"```{to_suggest}```",
+        color=discord.Color.green()
+    ).set_author(
+        name=f'{ctx.author}',
+        icon_url=f'https://cdn.discordapp.com/avatars/{ctx.author.id}/{ctx.author.avatar}.png'
+    ))
+
 client.run(read_file("token.txt"))

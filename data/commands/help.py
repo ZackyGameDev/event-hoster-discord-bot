@@ -6,10 +6,30 @@ from asyncio import TimeoutError
 from random import random
 
 initial_description = '''
-:clown: **Simon Says Event Commands**
-:tickets: **Ticket System Commands**
-:video_game: **Fun Commands**
+:slight_smile: - **General Commands**
+:clown: - **Simon Says Event Commands**
+:tickets: - **Ticket System Commands**
+:video_game: - **Fun Commands**
 '''
+
+help_general = """
+`help`:
+Shows this help message
+
+`ping`: 
+Get the bot's ping
+
+`report <issue to report>`:
+Report an issue of this bot directly to the creator of this bot
+`for e.g. -report Bot is very unstable`
+
+`suggest <suggestion>`:
+Suggest some feature for this bot, directly to the creator of this bot
+`for e.g. -suggest Please add more event hosting commands`
+
+`botInfo`:
+Get information about this bot
+"""
 
 help_simon_says = """
 `SimonSays`:
@@ -77,7 +97,11 @@ Same as `-Meme` but sends the memes in bulk and straight to your DM's, you can o
 '''
 
 help_embeds = {
-    "\U0001F921" : discord.Embed(  # 🤡 :clown:
+    "\U0001F642" : discord.Embed( # 🙂 :slight_smile:
+        title="General Commands",
+        description=help_general
+    ),
+    "\U0001F921" : discord.Embed( # 🤡 :clown:
         title="Simon Says Commands",
         description=help_simon_says
     ),

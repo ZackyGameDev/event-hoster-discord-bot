@@ -107,7 +107,7 @@ async def on_command_error(ctx, error):
 
 @tasks.loop(seconds=30)
 async def change_the_status():
-    game = discord.Game(f"on {len(client.guilds)} Discord servers")
+    game = discord.Game(f"on {len(client.guilds)} Discord servers [-help]")
     await client.change_presence(status=discord.Status.online, activity=game)
 
 @client.command()

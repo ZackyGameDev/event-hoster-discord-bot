@@ -7,13 +7,19 @@ from random import random
 
 async def channel_is_ticket(self, ctx):
     channel_is_ticket = None
-    async for entry in ctx.guild.audit_logs(limit=250, user=self.client.user, action=discord.AuditLogAction.channel_create):
-        if ctx.channel.id == entry.target.id:
-            channel_is_ticket = True
-            break
-        else:
-            channel_is_ticket = False
-
+    try:
+        async for entry in ctx.guild.audit_logs(limit=250, user=self.client.user, action=discord.AuditLogAction.channel_create):
+            if ctx.channel.id == entry.target.id:
+                channel_is_ticket = True
+                break
+            else:
+                channel_is_ticket = False
+    except:
+        await ctx.send(embed=discord.Embed(
+            title="Missing Permissions!",
+            description="I need the permissions to the audit log to confirm that this channel is a ticket created by me and not a regular channel",
+            color=discord.Color.red()
+        ))
     if channel_is_ticket == None or channel_is_ticket == False:
         await ctx.send(embed=discord.Embed(
             title="Illegal Command!",

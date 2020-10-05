@@ -3,6 +3,7 @@ import asyncio
 from discord.ext import commands
 from random import random, randrange
 from datetime import datetime, timedelta
+from data.events.giveawaysupdater import gmessage_update_loop
 
 class Giveaways(commands.Cog):
     def __init__(self, client):
@@ -169,33 +170,43 @@ class Giveaways(commands.Cog):
             "second" : datetime.now().second
         }
         
+        giveaway = {
+            "started_on" : started_on,
+            "timestamps" : time_stamps,
+            "winners" : winners,
+            "prize" : prize,
+            "id" : f"{channel.id}/{giveaway_message.id}"
+        }
+        
         try:
-            self.client.id_list['guild_setup_id_saves'][str(ctx.guild.id)]["giveaways"].append({
-                "started_on" : started_on,
-                "timestamps" : time_stamps,
-                "winners" : winners,
-                "prize" : prize,
-                "id" : f"{channel.id}/{giveaway_message.id}"
-            })
+            self.client.id_list['guild_setup_id_saves'][str(ctx.guild.id)]["giveaways"].append(giveaway)
         except KeyError:
             try:
-                self.client.id_list['guild_setup_id_saves'][str(ctx.guild.id)]["giveaways"] = [{
-                    "started_on" : started_on,
-                    "timestamps" : time_stamps,
-                    "winners" : winners,
-                    "prize" : prize,
-                    "id" : f"{channel.id}/{giveaway_message.id}"
-                }]
+                self.client.id_list['guild_setup_id_saves'][str(ctx.guild.id)]["giveaways"] = [giveaway]
             except KeyError:
-                self.client.id_list['guild_setup_id_saves'][str(ctx.guild.id)] = {
-                    "started_on" : started_on,
-                    "giveaways" : {
-                        "timestamps" : time_stamps,
-                        "winners" : winners,
-                        "prize" : prize,
-                        "id" : f"{channel.id}/{giveaway_message.id}"
-                    }
-                }
+                self.client.id_list['guild_setup_id_saves'][str(ctx.guild.id)] = {"giveaways" : [giveaway]}
+        
+        
+        # Start updating the giveaway message
+        start_on_json = giveaway["started_on"]
+        started_on = datetime(
+            year=start_on_json["year"],
+            month=start_on_json["month"],
+            day=start_on_json["day"],
+            hour=start_on_json["hour"],
+            minute=start_on_json["minute"],
+            second=start_on_json['second']
+        )
+        giveaway_running_for = datetime.utcnow() - started_on
+        how_long_to_run_json = giveaway["timestamps"]
+        how_long_to_run = timedelta(
+            days=how_long_to_run_json["days"],
+            hours=how_long_to_run_json["hours"],
+            minutes=how_long_to_run_json["minutes"],
+            seconds=how_long_to_run_json['seconds']
+        )
+        remaining_time = how_long_to_run - giveaway_running_for
+        asyncio.create_task(gmessage_update_loop(self, giveaway, remaining_time))
         
         await ctx.send(embed=discord.Embed(
             title="Giveaway started!",

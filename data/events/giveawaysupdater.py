@@ -1,10 +1,11 @@
 import discord
 import asyncio
+import random
 from datetime import datetime, timedelta
 from discord.ext import commands
 from data.utils.functions import console_log
 
-async def gmessage_update_loop(giveaway, remaining_time):
+async def gmessage_update_loop(self, giveaway, remaining_time):
     while True:        
         if remaining_time.days > 0:
             await asyncio.sleep(60*60*12)
@@ -23,7 +24,11 @@ async def gmessage_update_loop(giveaway, remaining_time):
             to_deduct = timedelta(seconds=10)
         else:
             for i in range(0, 10):
-                await giveaway_message.edit(embed=discord.Embed(
+                await asyncio.sleep(1)
+                
+                gchannel_id, gmessage_id = giveaway["id"].split("/")
+                giveaway_message = await self.client.get_channel(gchannel_id).fetch_message(gmessage_id)
+                await giveaway_message.edit(embed=discord.Embed( # Giveaway message will be defined on the first run of this loop
                     title=giveaway_message.embed.title,
                     description=f'React on this message with :tada: to enter! This is you last chance!\nEnding in **{10-i} seconds**',
                     color=discord.Color.red(),
@@ -34,8 +39,13 @@ async def gmessage_update_loop(giveaway, remaining_time):
                     name=giveaway_message.embed.author.name,
                     icon_url=giveaway_message.embed.author.icon_url
                 ))
-
-            await self.client.get_channel(gchannel_id).send(f"")
+            for reaction in giveaway_message.reactions:
+                if str(reaction.emoji) == "🎉":
+                    users = await reaction.users().flatten()
+                    # users is now a list of User...
+            
+            for i in range(giveaway["winners"]):
+                await giveaway_message.channel.send(f"Congratulations <@{random.choice(users).id}>! You won **{giveaway['prize']}**\nhttps://discordapp.com/channels/{giveaway_message.channel.guild.id}/{gchannel_id}/{gmessage_id}")
 
         remaining_time -= to_deduct
         gchannel_id, gmessage_id = giveaway["id"].split("/")
@@ -51,6 +61,7 @@ async def gmessage_update_loop(giveaway, remaining_time):
             name=giveaway_message.embed.author.name,
             icon_url=giveaway_message.embed.author.icon_url
         ))
+
 class Giveaways(commands.Cog):
     def __init__(self, client):
         self.client = client
@@ -64,7 +75,7 @@ class Giveaways(commands.Cog):
                 giveaways = self.client.id_list["guild_setup_id_saves"][str(guild.id)]["giveaways"]
             except KeyError:
                 continue
-            for giveaway in giveaways
+            for giveaway in giveaways:
                 start_on_json = giveaway["started_on"]
                 started_on = datetime(
                     year=start_on_json["year"],
@@ -76,14 +87,12 @@ class Giveaways(commands.Cog):
                 )
                 giveaway_running_for = datetime.utcnow() - started_on
                 how_long_to_run_json = giveaway["timestamps"]
-                how_long_to_run = datetime(
-                    year=how_long_to_run_json["year"],
-                    month=how_long_to_run_json["month"],
-                    day=how_long_to_run_json["day"],
-                    hour=how_long_to_run_json["hour"],
-                    minute=how_long_to_run_json["minute"],
-                    second=how_long_to_run_json['second']
+                how_long_to_run = timedelta(
+                    days=how_long_to_run_json["days"],
+                    hours=how_long_to_run_json["hours"],
+                    minutes=how_long_to_run_json["minutes"],
+                    seconds=how_long_to_run_json['seconds']
                 )
                 remaining_time = how_long_to_run - giveaway_running_for
                 
-                asyncio.create_task(gmessage_update_loop(giveaway, remaining_time))
+                asyncio.create_task(gmessage_update_loop(self, giveaway, remaining_time))

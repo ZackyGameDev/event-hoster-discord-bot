@@ -1,6 +1,7 @@
 # Private Secret API Keys/Tokens
 token.txt
 ServiceAccountCreds.json
+reddit_creds.json
 
 # Data Saves
 id-list.json

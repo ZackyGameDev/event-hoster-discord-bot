@@ -5,6 +5,32 @@ from discord.ext import commands
 from asyncio import TimeoutError
 from random import random
 
+initial_description = '''
+:slight_smile: - **General Commands**
+:clown: - **Simon Says Event Commands**
+:tickets: - **Ticket System Commands**
+:video_game: - **Fun Commands**
+'''
+
+help_general = """
+`help`:
+Shows this help message
+
+`ping`: 
+Get the bot's ping
+
+`report <issue to report>`:
+Report an issue of this bot directly to the creator of this bot
+`for e.g. -report Bot is very unstable`
+
+`suggest <suggestion>`:
+Suggest some feature for this bot, directly to the creator of this bot
+`for e.g. -suggest Please add more event hosting commands`
+
+`botInfo`:
+Get information about this bot
+"""
+
 help_simon_says = """
 `SimonSays`:
 Say Something as Simon in the Simon Says Events Channel.
@@ -49,14 +75,43 @@ e.g. `-close Solved this issue in #faq`
 Setup your server to enable ticket system.
 '''
 
+help_fun_commands = '''
+`8Ball <TO PREDICT>`:
+Predicts the outcome of your statement
+
+`RoleDice`: 
+Roles a dice a tells the result
+
+`FlipCoin`:
+Flip a coin
+
+`Meme`:
+Sends a Meme
+
+`DankMeme`:
+Sends a Meme from dankmemes subreddit
+
+`sendMemes <amount>`:
+Same as `-Meme` but sends the memes in bulk and straight to your DM's, you can optionally say "dank" at the end to have the memes from dankmemes subreddit
+`for e.g. -sendMemes 10 dank`
+'''
+
 help_embeds = {
-    "\U0001F921" : discord.Embed(  # 🤡 :clown:
+    "\U0001F642" : discord.Embed( # 🙂 :slight_smile:
+        title="General Commands",
+        description=help_general
+    ),
+    "\U0001F921" : discord.Embed( # 🤡 :clown:
         title="Simon Says Commands",
         description=help_simon_says
     ),
-    "\U0001F3AB" : discord.Embed( # 🎫 :ticket:
+    "\U0001F39F" : discord.Embed( # 🎟 :tickets:
         title="Ticket System Commands",
         description=help_ticket_system
+    ),
+    "\U0001F3AE" : discord.Embed( # 🎮 :video_game:
+        title="Fun Commands",
+        description=help_fun_commands
     )
 }
 
@@ -67,7 +122,7 @@ class HelpCommand(commands.Cog):
     
     @commands.command()
     async def help(self, ctx):
-        help_message = await ctx.send(embed=discord.Embed(description="Please React on one of the reactions on this message below", color=discord.Color.blue()))
+        help_message = await ctx.send(embed=discord.Embed(title="React Below For Help", description=initial_description, color=discord.Color.gold()))
         for emoji in help_embeds:
             await help_message.add_reaction(emoji)
         while True:

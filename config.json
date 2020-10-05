@@ -1,4 +1,7 @@
 {
-    "blacklisted_extensions" : ["data.events.database-fetcher"],
-    "json_file_upload_channel_id" : 717985234137776149
+    "blacklisted_extensions": ["data.events.database-fetcher"],
+    "json_file_upload_channel_id": 717985234137776149,
+    "suggestions_channel_id": 717656333767278623,
+    "bug_reports_channel_id": 717656333767278623,
+    "bot_info": "This, is a bot created by Zacky#9543 created with the intent of creating of a bot that can do everything that a giveaway server needs. Hold giveaways, events, ticket management, etc. You can do `-help` in order to see everything that this bot can do, this bot is in constant development, both bug fixing and new additions are constantly made, thus this bot always keeps improving, for reporting bugs or suggesting, please use `-report` or `suggest` commands. and to get direct help, join our discord server: https://discord.gg/XwXgJ3"
 }

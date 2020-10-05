@@ -29,7 +29,8 @@ def boot_bot(blacklisted_extensions : tuple) -> None: # i am not using the on_re
         for file in files:
             filelist.append(os.path.join(root,file))
 
-    # And then loading them    
+    # And then loading them
+    lines= 0 #this is just a small thing i did for counting the lines of code written
     for file in filelist:
         if file.endswith('.py'):
             file = file.replace('/', '.').replace('\\', '.')[:-3]

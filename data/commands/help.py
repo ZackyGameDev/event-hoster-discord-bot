@@ -134,12 +134,14 @@ class HelpCommand(commands.Cog):
                 try:
                     embed=help_embeds[str(reaction.emoji)]
                 except KeyError:
-                    await reaction.remove(user)
-                    continue
+                    embed=help_message.embed
                 embed.color = discord.Color.from_hsv(random(), 1, 1)
                 embed.set_footer(text="Please react below on one of the already reacted emojis for accessing categories")
                 await help_message.edit(embed=embed)
-                await reaction.remove(user)
+                try:
+                    await reaction.remove(user)
+                except:
+                    continue
             except TimeoutError:
                 break
     

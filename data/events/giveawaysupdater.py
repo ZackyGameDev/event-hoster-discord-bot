@@ -45,8 +45,25 @@ async def gmessage_update_loop(self, giveaway, remaining_time):
                     users = await reaction.users().flatten()
                     # users is now a list of User...
             
+            winners = ""
             for i in range(giveaway["winners"]):
-                await giveaway_message.channel.send(f"Congratulations <@{random.choice(users).id}>! You won **{giveaway['prize']}**\nhttps://discordapp.com/channels/{giveaway_message.channel.guild.id}/{gchannel_id}/{gmessage_id}")
+                winner = f"<@{random.choice(users).id}>"
+                winners = winners + winner + ' '
+                await giveaway_message.channel.send(f"Congratulations {winner}! You won **{giveaway['prize']}**\nhttps://discordapp.com/channels/{giveaway_message.channel.guild.id}/{gchannel_id}/{gmessage_id}")
+            await giveaway_message.edit(embed=discord.Embed(
+                title="Giveaway ended!", 
+                description=f"Prize: {giveaway['prize']}\nWinner(s): {winners}", 
+                color=discord.Color.gold(),
+                timestamp=giveaway_message.embeds[0].timestamp
+            ).set_footer(
+                text="Giveaway ended on"
+            ).set_author(
+                name=giveaway_message.embeds[0].author.name,
+                icon_url=giveaway_message.embeds[0].author.icon_url
+            ))
+            
+            self.client.id_list["guild_setup_id_saves"][str(giveaway_message.guild.id)]["giveaways"].remove(giveaway)
+            return
 
         remaining_time -= to_deduct
         gchannel_id, gmessage_id = int(giveaway["id"].split("/")[0]), int(giveaway["id"].split("/")[1])

@@ -7,21 +7,22 @@ from data.utils.functions import console_log
 
 async def gmessage_update_loop(self, giveaway, remaining_time):
     while True:        
-        if remaining_time.days > 0:
+        if remaining_time.days >= 1:
             await asyncio.sleep(60*60*12)
             to_deduct = timedelta(days=1)
 
-        elif remaining_time.seconds > 60*60:
+        elif remaining_time.seconds >= 60*60:
             await asyncio.sleep(60*60)
             to_deduct = timedelta(hours=1)
 
-        elif remaining_time.seconds > 60:
+        elif remaining_time.seconds >= 60:
             await asyncio.sleep(60)
             to_deduct = timedelta(minutes=1)
 
-        elif remaining_time.seconds > 10:
+        elif remaining_time.seconds <= 10:
             await asyncio.sleep(10)
             to_deduct = timedelta(seconds=10)
+
         else:
             for i in range(0, 10):
                 await asyncio.sleep(1)
@@ -62,13 +63,13 @@ async def gmessage_update_loop(self, giveaway, remaining_time):
             icon_url=giveaway_message.embed.author.icon_url
         ))
 
-class Giveaways(commands.Cog):
+class GiveawaysUpdater(commands.Cog):
     def __init__(self, client):
         self.client = client
     
     @commands.Cog.listener()
     async def on_ready(self):
-        console_log("Loading all the giveaway messages\nthis can take a while...", "orange")
+        console_log("Loading all the giveaway messages\nthis can take a while...", "yellow")
         await asyncio.sleep(3)
         for guild in self.client.guilds:
             try:
@@ -96,3 +97,8 @@ class Giveaways(commands.Cog):
                 remaining_time = how_long_to_run - giveaway_running_for
                 
                 asyncio.create_task(gmessage_update_loop(self, giveaway, remaining_time))
+                
+        console_log("Loaded all the giveaway messages!", "green")
+
+def setup(client):
+    client.add_cog(GiveawaysUpdater(client))

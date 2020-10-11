@@ -161,6 +161,8 @@ class Giveaways(commands.Cog):
             text="This Giveaway will end on "
         ))
         
+        await giveaway_message.add_reaction("🎉")
+        
         started_on = {
             "year" : datetime.now().year,
             "month" : datetime.now().month,

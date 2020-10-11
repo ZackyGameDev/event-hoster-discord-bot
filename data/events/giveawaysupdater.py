@@ -19,7 +19,7 @@ async def gmessage_update_loop(self, giveaway, remaining_time):
             await asyncio.sleep(60)
             to_deduct = timedelta(minutes=1)
 
-        elif remaining_time.seconds <= 10:
+        elif remaining_time.seconds >= 10:
             await asyncio.sleep(10)
             to_deduct = timedelta(seconds=10)
 
@@ -49,7 +49,7 @@ async def gmessage_update_loop(self, giveaway, remaining_time):
                 await giveaway_message.channel.send(f"Congratulations <@{random.choice(users).id}>! You won **{giveaway['prize']}**\nhttps://discordapp.com/channels/{giveaway_message.channel.guild.id}/{gchannel_id}/{gmessage_id}")
 
         remaining_time -= to_deduct
-        gchannel_id, gmessage_id = giveaway["id"].split("/")
+        gchannel_id, gmessage_id = int(giveaway["id"].split("/")[0]), int(giveaway["id"].split("/")[1])
         giveaway_message = await self.client.get_channel(gchannel_id).fetch_message(gmessage_id)
         await giveaway_message.edit(embed=discord.Embed(
             title=giveaway_message.embed.title,

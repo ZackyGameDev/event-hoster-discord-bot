@@ -30,15 +30,15 @@ async def gmessage_update_loop(self, giveaway, remaining_time):
                 gchannel_id, gmessage_id = giveaway["id"].split("/")
                 giveaway_message = await self.client.get_channel(gchannel_id).fetch_message(gmessage_id)
                 await giveaway_message.edit(embed=discord.Embed( # Giveaway message will be defined on the first run of this loop
-                    title=giveaway_message.embed.title,
+                    title=giveaway_message.embeds[0].title,
                     description=f'React on this message with :tada: to enter! This is you last chance!\nEnding in **{10-i} seconds**',
                     color=discord.Color.red(),
-                    timestamp=giveaway_message.embed.timestamp
+                    timestamp=giveaway_message.embeds[0].timestamp
                 ).set_footer(
-                    text=giveaway_message.embed.footer.text
+                    text=giveaway_message.embeds[0].footer.text
                 ).set_author(
-                    name=giveaway_message.embed.author.name,
-                    icon_url=giveaway_message.embed.author.icon_url
+                    name=giveaway_message.embeds[0].author.name,
+                    icon_url=giveaway_message.embeds[0].author.icon_url
                 ))
             for reaction in giveaway_message.reactions:
                 if str(reaction.emoji) == "🎉":
@@ -52,15 +52,15 @@ async def gmessage_update_loop(self, giveaway, remaining_time):
         gchannel_id, gmessage_id = int(giveaway["id"].split("/")[0]), int(giveaway["id"].split("/")[1])
         giveaway_message = await self.client.get_channel(gchannel_id).fetch_message(gmessage_id)
         await giveaway_message.edit(embed=discord.Embed(
-            title=giveaway_message.embed.title,
+            title=giveaway_message.embeds[0].title,
             description=f'React on this message with :tada: to enter!\nGiveaway ends in {str(remaining_time)}',
             color=discord.Color.gold(),
-            timestamp=giveaway_message.embed.timestamp
+            timestamp=giveaway_message.embeds[0].timestamp
         ).set_footer(
-            text=giveaway_message.embed.footer.text
+            text=giveaway_message.embeds[0].footer.text
         ).set_author(
-            name=giveaway_message.embed.author.name,
-            icon_url=giveaway_message.embed.author.icon_url
+            name=giveaway_message.embeds[0].author.name,
+            icon_url=giveaway_message.embeds[0].author.icon_url
         ))
 
 class GiveawaysUpdater(commands.Cog):

@@ -20,7 +20,6 @@ class Giveaways(commands.Cog):
                 )
             )
 
-    @commands.has_permissions(manage_server=True)
     @giveaway.command()
     async def start(self, ctx):
 
@@ -28,6 +27,9 @@ class Giveaways(commands.Cog):
         for role in ctx.author.roles:
             if role.name.lower() == "giveaways":
                 has_giveaway_perms = True
+
+        if ctx.author.permissions_in(ctx.channel).manage_guild:
+            has_giveaway_perms = True
 
         if not has_giveaway_perms:
             await ctx.send(embed=discord.Embed(
@@ -229,15 +231,6 @@ class Giveaways(commands.Cog):
             description=f"Giveaway started in <#{channel.id}>",
             color=discord.Color.green()
         ))
-
-    @start.error
-    async def clear_error(self, ctx, error):
-        if isinstance(error, commands.MissingPermissions):
-            await ctx.send(embed=discord.Embed(
-                title="Missing Permissions!",
-                description="You either need the `manage server` permission or have a role named Giveaways to perform this action!",
-                color= discord.Color.red()
-            ))
         
 def setup(client):
     client.add_cog(Giveaways(client))

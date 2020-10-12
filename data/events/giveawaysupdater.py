@@ -48,6 +48,8 @@ async def gmessage_update_loop(self, giveaway, remaining_time):
             winners = ""
             for i in range(giveaway["winners"]):
                 winner = f"<@{random.choice(users).id}>"
+                while winner != f"<@{self.client.user.id}>":
+                    winner = f"<@{random.choice(users).id}>"
                 winners = winners + winner + ' '
                 await giveaway_message.channel.send(f"Congratulations {winner}! You won **{giveaway['prize']}**\nhttps://discordapp.com/channels/{giveaway_message.channel.guild.id}/{gchannel_id}/{gmessage_id}")
             await giveaway_message.edit(embed=discord.Embed(

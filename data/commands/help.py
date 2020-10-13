@@ -19,6 +19,10 @@ Shows this help message
 `ping`: 
 Get the bot's ping
 
+`invite`:
+Invite me to your server!
+or join our server!
+
 `report <issue to report>`:
 Report an issue of this bot directly to the creator of this bot
 `for e.g. -report Bot is very unstable`

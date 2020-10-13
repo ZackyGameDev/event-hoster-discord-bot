@@ -156,6 +156,12 @@ async def botinfo(ctx):
     ))
 
 @client.command()
+async def invite(ctx):
+    embed=discord.Embed(title="Here you go!", description="[Add me to your server!](https://discord.com/developers/applications/759290479069626418/oauth2) \n[Join our discord Server!](https://discord.gg/QNsmC84)", color=0xfff700)
+    embed.set_author(name="Event Hoster", icon_url="https://cdn.discordapp.com/avatars/759290479069626418/f2b8ccbef278dcf0d03c3cd0d3b71b12.png")
+    await ctx.send(embed=embed)
+
+@client.command()
 async def suggest(ctx, *, to_suggest):
     await ctx.send(embed=discord.Embed(
         title="Suggestion submitted",

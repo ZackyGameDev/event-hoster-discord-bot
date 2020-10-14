@@ -83,8 +83,8 @@ help_fun_commands = '''
 `8Ball <TO PREDICT>`:
 Predicts the outcome of your statement
 
-`RoleDice`: 
-Roles a dice a tells the result
+`RollDice`: 
+Rolls a dice a tells the result
 
 `FlipCoin`:
 Flip a coin

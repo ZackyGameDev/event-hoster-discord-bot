@@ -13,6 +13,7 @@ async def gmessage_update_loop(self, giveaway, remaining_time):
             
         elif remaining_time.days <= -1:
             remaining_time = timedelta(seconds=10) # If event hoster missed the ending of the giveaway, (perhaps because of downtime), set the time to end in 10 seconds
+            to_deduct = timedelta(seconds=0)
             
         elif remaining_time.seconds >= 60*60:
             await asyncio.sleep(60*60)

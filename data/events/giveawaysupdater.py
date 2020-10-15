@@ -48,21 +48,26 @@ async def gmessage_update_loop(self, giveaway, remaining_time):
                 if str(reaction.emoji) == "🎉":
                     users = await reaction.users().flatten()
                     # users is now a list of User...
-                    if len(users)-1 <= giveaway['winners']:
-                        await giveaway_message.channel.send(f"Not enough participants to declare winner! hence it's a draw! Nobody won!\nhttps://discordapp.com/channels/{giveaway_message.channel.guild.id}/{gchannel_id}/{gmessage_id}")
-                        await giveaway_message.edit(embed=discord.Embed(
-                            title="Giveaway ended!", 
-                            description=f"Prize: {giveaway['prize']}\nWinner(s): Nobody!", 
-                            color=discord.Color.red(),
-                            timestamp=giveaway_message.embeds[0].timestamp
-                        ).set_footer(
-                            text="Giveaway ended on"
-                        ).set_author(
-                            name=giveaway_message.embeds[0].author.name,
-                            icon_url=giveaway_message.embeds[0].author.icon_url
-                        ))
-                        self.client.id_list["guild_setup_id_saves"][str(giveaway_message.guild.id)]["giveaways"].remove(giveaway)
-                        return
+            
+            try:
+                users
+            except NameError:
+                users = 1
+            if len(users)-1 <= giveaway['winners']:
+                await giveaway_message.channel.send(f"Not enough participants to declare winner! hence it's a draw! Nobody won!\nhttps://discordapp.com/channels/{giveaway_message.channel.guild.id}/{gchannel_id}/{gmessage_id}")
+                await giveaway_message.edit(embed=discord.Embed(
+                    title="Giveaway ended!", 
+                    description=f"Prize: {giveaway['prize']}\nWinner(s): Nobody!", 
+                    color=discord.Color.red(),
+                    timestamp=giveaway_message.embeds[0].timestamp
+                ).set_footer(
+                    text="Giveaway ended on"
+                ).set_author(
+                    name=giveaway_message.embeds[0].author.name,
+                    icon_url=giveaway_message.embeds[0].author.icon_url
+                ))
+                self.client.id_list["guild_setup_id_saves"][str(giveaway_message.guild.id)]["giveaways"].remove(giveaway)
+                return
             
             winners = f"<@{self.client.user.id}>"
             for i in range(giveaway["winners"]):

@@ -11,7 +11,7 @@ from data.utils.functions import read_file, console_log, cprint
 from discord.ext import commands, tasks
 
 client = commands.Bot(command_prefix=('z!', '.', '!', '>', '-'), case_insensitive=True)
-client.version = "v0.0.6"
+client.version = "v0.0.8"
 client.id_list = {}
 colorama.init()
 

@@ -28,6 +28,7 @@ async def gmessage_update_loop(self, giveaway, remaining_time):
             to_deduct = timedelta(seconds=10)
 
         else:
+            # Last ten seconds!
             for i in range(0, 10):
                 await asyncio.sleep(1)
                 
@@ -49,10 +50,13 @@ async def gmessage_update_loop(self, giveaway, remaining_time):
                     users = await reaction.users().flatten()
                     # users is now a list of User...
             
+            # If no reaction, set users to a single item list so it is defined for later
             try:
                 users
             except NameError:
-                users = 1
+                users = [1]
+
+            # If not enough people participated
             if len(users)-1 <= giveaway['winners']:
                 await giveaway_message.channel.send(f"Not enough participants to declare winner! hence it's a draw! Nobody won!\nhttps://discordapp.com/channels/{giveaway_message.channel.guild.id}/{gchannel_id}/{gmessage_id}")
                 await giveaway_message.edit(embed=discord.Embed(
@@ -69,6 +73,7 @@ async def gmessage_update_loop(self, giveaway, remaining_time):
                 self.client.id_list["guild_setup_id_saves"][str(giveaway_message.guild.id)]["giveaways"].remove(giveaway)
                 return
             
+            # Declaring a winner
             winners = f"<@{self.client.user.id}>"
             for i in range(giveaway["winners"]):
                 winner = f"<@{random.choice(users).id}>"

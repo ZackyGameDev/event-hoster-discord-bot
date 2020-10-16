@@ -45,6 +45,7 @@ class JsonParser(commands.Cog):
                 if len(json_to_send) > 1900: # Send message limit is 2000, keeping it to 1900 just to be on the safe side
                     await channel_to_upload_to.send(f"```json\n{json_to_send}```")
                     json_to_send = ""
+            await channel_to_upload_to.send(f"```json\n{json_to_send}```")
 
             console_log("JSON file data sent", "green")
         except Exception as e:

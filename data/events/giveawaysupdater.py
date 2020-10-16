@@ -57,7 +57,7 @@ async def gmessage_update_loop(self, giveaway, remaining_time):
                 users = [1]
 
             # If not enough people participated
-            if len(users)-1 <= giveaway['winners']:
+            if len(users)-1 < giveaway['winners']:
                 await giveaway_message.channel.send(f"Not enough participants to declare winner! hence it's a draw! Nobody won!\nhttps://discordapp.com/channels/{giveaway_message.channel.guild.id}/{gchannel_id}/{gmessage_id}")
                 await giveaway_message.edit(embed=discord.Embed(
                     title="Giveaway ended!", 

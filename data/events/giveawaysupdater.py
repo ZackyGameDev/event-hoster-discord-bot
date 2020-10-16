@@ -7,13 +7,21 @@ from data.utils.functions import console_log
 
 async def gmessage_update_loop(self, giveaway, remaining_time):
     while True:        
-        if remaining_time.days >= 1:
-            await asyncio.sleep(60*60*12)
-            to_deduct = timedelta(days=1)
-            
-        elif remaining_time.days <= -1:
+        if remaining_time.days <= -1:
             remaining_time = timedelta(seconds=10) # If event hoster missed the ending of the giveaway, (perhaps because of downtime), set the time to end in 10 seconds
             to_deduct = timedelta(seconds=0)
+
+        elif remaining_time.days >= 30:
+            await asyncio.sleep(60*60*12*7*30)
+            to_deduct = timedelta(days=30)
+            
+        elif remaining_time.days >= 7:
+            await asyncio.sleep(60*60*12*7)
+            to_deduct = timedelta(days=7)
+            
+        elif remaining_time.days >= 1:
+            await asyncio.sleep(60*60*12)
+            to_deduct = timedelta(days=1)
             
         elif remaining_time.seconds >= 60*60:
             await asyncio.sleep(60*60)

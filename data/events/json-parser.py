@@ -32,16 +32,23 @@ class JsonParser(commands.Cog):
         json_data_file = open("id-list.json", "w")
         json.dump(self.client.id_list, json_data_file, indent=4)
 
-    # I really wanted to have the json file stored on some other place, where i could access it from, in case the bot's hosting went down, so for now, im uploading it to a discord channel as a file, later I will have the data\events\database-fetcher.py do it        
-    @tasks.loop(hours=24)
-    async def upload_json_to_discord(self):
+    # I really wanted to have the json file stored on some other place, where i could access it from, in case the bot's hosting went down, so for now, im uploading it to a discord channel as a file, later I will have the data\events\database-fetcher.py do it
+    @tasks.loop(minutes=5)
+    async def upload_json_to_discord(self): # I fisrt used to upload the whole thing as a file, but that's actually the worst thing to o because that can get this rate limited real quick, so i'm make it send it in a message instead
         channel_to_upload_to = self.client.get_channel(json.loads(read_file("config.json"))["json_file_upload_channel_id"])
-        console_log("Attempting to upload the json file to TC.{}({})".format(channel_to_upload_to.name, channel_to_upload_to.id), "yellow")
+        console_log("Attempting to upload, or send the json file data to TC:{}({})".format(channel_to_upload_to.name, channel_to_upload_to.id), "yellow")
         try:
-            await channel_to_upload_to.send(file=discord.File("id-list.json"))
-            console_log("JSON file upload success", "green")
+            # await channel_to_upload_to.send(file=discord.File("id-list.json"))
+            json_to_send = ""
+            for i in read_file("id-list.json"):
+                json_to_send = json_to_send + i
+                if len(json_to_send) > 1900: # Send message limit is 2000, keeping it to 1900 just to be on the safe side
+                    await channel_to_upload_to.send(f"```json\n{json_to_send}```")
+                    json_to_send = ""
+
+            console_log("JSON file data sent", "green")
         except Exception as e:
-            console_log(f"Upload JSON failed: {e}", "red")
+            console_log(f"Upload JSON data failed: {e}", "red")
         
     @save_data_as_json.before_loop
     @upload_json_to_discord.before_loop

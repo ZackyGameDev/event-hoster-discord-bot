@@ -33,7 +33,7 @@ class JsonParser(commands.Cog):
         json.dump(self.client.id_list, json_data_file, indent=4)
 
     # I really wanted to have the json file stored on some other place, where i could access it from, in case the bot's hosting went down, so for now, im uploading it to a discord channel as a file, later I will have the data\events\database-fetcher.py do it
-    @tasks.loop(minutes=5)
+    @tasks.loop(minutes=60)
     async def upload_json_to_discord(self): # I fisrt used to upload the whole thing as a file, but that's actually the worst thing to o because that can get this rate limited real quick, so i'm make it send it in a message instead
         channel_to_upload_to = self.client.get_channel(json.loads(read_file("config.json"))["json_file_upload_channel_id"])
         console_log("Attempting to upload, or send the json file data to TC:{}({})".format(channel_to_upload_to.name, channel_to_upload_to.id), "yellow")

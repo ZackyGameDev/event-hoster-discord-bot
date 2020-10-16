@@ -40,7 +40,7 @@ async def gmessage_update_loop(self, giveaway, remaining_time):
             for i in range(0, 10):
                 await asyncio.sleep(1)
                 
-                gchannel_id, gmessage_id = int(giveaway["id"].split("/")[0]), int(giveaway["id"].split("/")[1])
+                gchannel_id, gmessage_id = map(int, giveaway["id"].split("/"))
                 giveaway_message = await self.client.get_channel(gchannel_id).fetch_message(gmessage_id)
                 await giveaway_message.edit(embed=discord.Embed( # Giveaway message will be defined on the first run of this loop
                     title=giveaway_message.embeds[0].title,
@@ -105,7 +105,7 @@ async def gmessage_update_loop(self, giveaway, remaining_time):
             return
 
         remaining_time -= to_deduct
-        gchannel_id, gmessage_id = int(giveaway["id"].split("/")[0]), int(giveaway["id"].split("/")[1])
+        gchannel_id, gmessage_id = map(int, giveaway["id"].split("/"))
         giveaway_message = await self.client.get_channel(gchannel_id).fetch_message(gmessage_id)
         await giveaway_message.edit(embed=discord.Embed(
             title=giveaway_message.embeds[0].title,

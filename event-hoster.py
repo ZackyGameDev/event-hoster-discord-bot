@@ -3,6 +3,7 @@ import os
 import json
 import time
 import colorama
+import asyncio
 import sys
 
 from discord.ext.commands.errors import NoEntryPointError
@@ -15,7 +16,7 @@ def get_guild_prefix(client:commands.Bot, message:discord.Message):
         return client.id_list['prefixes'][f'{message.guild.id}']
     except KeyError: 
         client.id_list['prefixes'][f'{message.guild.id}'] = '%'
-        get_guild_prefix(client, message)
+        client.prefix(client, message) # The client.prefix = get_guild_prefix, this is to avoid getting not defined function issue in cogs
 
 client = commands.Bot(command_prefix=get_guild_prefix, case_insensitive=True)
 client.version = "v0.0.8"
@@ -56,12 +57,31 @@ def boot_bot(blacklisted_extensions : tuple) -> None: # i am not using the on_re
 
 boot_bot(blacklisted_extensions = json.loads(read_file("config.json"))["blacklisted_extensions"])
 @client.event
-async def on_ready():              
-    console_log('~~~~~~ Commands and Extensions loaded, boot successful ~~~~~~', "green")
-    console_log('~~~~~~~~~~~ Serving in {} Number for guilds ~~~~~~~~~~~'.format(len(client.guilds)), "green")
-    console_log("~~~~~~~~ Below are the messages from the extensions ~~~~~~~~~", "cyan")
+async def on_ready():
+    await asyncio.sleep(5) # Gotta wait for the extensions to do their thing first, (for e.g. id_list needs to be defined)
+    # Making sure every server has a default prefix to avoid future errors
+    console_log("Serving in the following guilds:")
+    for guild in client.guilds:
+        console_log(f"....{guild.name}[{guild.id}]")
+        try:
+            client.id_list['prefixes'][f'{guild.id}']
+        except KeyError:
+            client.id_list['prefixes'][f'{guild.id}'] = '%'
+            
+    console_log('~~~~~~ Commands, Prefixes and Extensions loaded, boot successful ~~~~~~', "green")
+    console_log('~~~~~~~~~~~ Serving in {} Number of guilds ~~~~~~~~~~~'.format(len(client.guilds)), "green")
     change_the_status.start()
-    
+
+@client.event
+async def on_guild_join(guild:discord.Guild):
+    console_log("I was added to the Server: %s, Owner of the server: %s :D" % (guild.name, guild.owner), "green")
+    client.id_list['prefixes'][f'{guild.id}'] = '%'
+
+@client.event
+async def on_guild_remove(guild:discord.Guild):
+    console_log("I was removed from the Server: %s, Owner of the server: %s" % (guild.name, guild.owner), "red")
+    del client.id_list['prefixes'][f'{guild.id}']
+
 @client.command()
 @commands.check(author_is_zacky)
 async def reload_extension(ctx, extension):

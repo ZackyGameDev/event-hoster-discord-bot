@@ -5,12 +5,31 @@ from termcolor import cprint
 from discord.ext import commands, tasks
 from data.utils.functions import console_log, read_file
 
+initial_json = { # If the json file doesn't exist, i will create it and put this data into it
+    "emojis": {
+        "checkGif": "<a:checkGif:760758712876400680>",
+        "crossGif": "<a:crossGif:760758713777913876>"
+    },
+    "tickets_count": {},
+    "prefixes": {},
+    "guild_setup_id_saves": {},
+    "important_users": {
+        "Zacky": 625987962781433867
+    }
+}
+
 class JsonParser(commands.Cog):
     
     def __init__(self, client):    
         self.client = client
         self.save_data_as_json.start()
         self.upload_json_to_discord.start()
+        try:
+            read_file('id-list.json')
+        except:
+            f = open('id-list.json', 'w')
+            f.write(json.dumps(initial_json))
+            f.close()
         
     def cog_unload(self):
         self.save_data_as_json.stop()
@@ -23,9 +42,10 @@ class JsonParser(commands.Cog):
         except IOError:
             json_data_file = open("id-list.json", "w+")
         json_data = json.loads(json_data_file.read())
-        self.client.id_list = json_data
+        self.client.id_list:dict = json_data
         console_log(f'Loaded the json data: {json.dumps(self.client.id_list, indent=2, sort_keys=True)}', "green")
         json_data_file.close()
+        self.client.id_list['emojis'] = initial_json['emojis']
 
     @tasks.loop(seconds=30)
     async def save_data_as_json(self):

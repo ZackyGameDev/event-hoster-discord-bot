@@ -15,12 +15,13 @@ def get_guild_prefix(client:commands.Bot, message:discord.Message):
     try:
         return client.id_list['prefixes'][f'{message.guild.id}']
     except KeyError: 
-        client.id_list['prefixes'][f'{message.guild.id}'] = '%'
+        client.id_list['prefixes'][f'{message.guild.id}'] = client.default_prefix
         client.prefix(client, message) # The client.prefix = get_guild_prefix, this is to avoid getting not defined function issue in cogs
 
 client = commands.Bot(command_prefix=get_guild_prefix, case_insensitive=True)
 client.version = "v0.0.8"
 client.id_list = {}
+client.default_prefix = '$' # If no custom prefixes for any guild is set, this is the prefix used by default
 client.prefix = get_guild_prefix
 colorama.init()
 
@@ -66,7 +67,7 @@ async def on_ready():
         try:
             client.id_list['prefixes'][f'{guild.id}']
         except KeyError:
-            client.id_list['prefixes'][f'{guild.id}'] = '%'
+            client.id_list['prefixes'][f'{guild.id}'] = client.default_prefix
             
     console_log('~~~~~~ Commands, Prefixes and Extensions loaded, boot successful ~~~~~~', "green")
     console_log('~~~~~~~~~~~ Serving in {} Number of guilds ~~~~~~~~~~~'.format(len(client.guilds)), "green")
@@ -75,7 +76,7 @@ async def on_ready():
 @client.event
 async def on_guild_join(guild:discord.Guild):
     console_log("I was added to the Server: %s, Owner of the server: %s :D" % (guild.name, guild.owner), "green")
-    client.id_list['prefixes'][f'{guild.id}'] = '%'
+    client.id_list['prefixes'][f'{guild.id}'] = client.default_prefix
 
 @client.event
 async def on_guild_remove(guild:discord.Guild):

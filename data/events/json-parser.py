@@ -37,15 +37,14 @@ class JsonParser(commands.Cog):
         
     @commands.Cog.listener()
     async def on_ready(self):
-        try:
-            json_data_file = open("id-list.json", "r")
-        except IOError:
-            json_data_file = open("id-list.json", "w+")
+        json_data_file = open("id-list.json", "w+")
         json_data = json.loads(json_data_file.read())
+        for key in initial_json:
+            try: json_data[key]
+            except KeyError: json_data[key] = initial_json[key]
         self.client.id_list:dict = json_data
         console_log(f'Loaded the json data: {json.dumps(self.client.id_list, indent=2, sort_keys=True)}', "green")
         json_data_file.close()
-        self.client.id_list['emojis'] = initial_json['emojis']
 
     @tasks.loop(seconds=30)
     async def save_data_as_json(self):

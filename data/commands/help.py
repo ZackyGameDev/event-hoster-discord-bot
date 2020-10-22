@@ -13,91 +13,94 @@ initial_description = '''
 '''
 
 help_general = """
-`help`:
+`$p$help`:
 Shows this help message
 
-`ping`: 
+`$p$prefix`:
+Change My Prefix
+
+`$p$ping`: 
 Get the bot's ping
 
-`invite`:
+`$p$invite`:
 Invite me to your server!
 or join our server!
 
-`report <issue to report>`:
+`$p$report <issue to report>`:
 Report an issue of this bot directly to the creator of this bot
-`for e.g. -report Bot is very unstable`
+`for e.g. $p$report Bot is very unstable`
 
-`suggest <suggestion>`:
+`$p$suggest <suggestion>`:
 Suggest some feature for this bot, directly to the creator of this bot
-`for e.g. -suggest Please add more event hosting commands`
+`for e.g. $p$suggest Please add more event hosting commands`
 
-`botInfo`:
+`$p$botInfo`:
 Get information about this bot
 """
 
 help_simon_says = """
-`SimonSays`:
+`$p$SimonSays`:
 Say Something as Simon in the Simon Says Events Channel.
-e.g. `-SimonSays person below will be killed!`
+e.g. `$p$SimonSays person below will be killed!`
 
-`SimonKill`:
+`$p$SimonKill`:
 Disqualify Simon Says Participant(s).
-e.g. `-SimonKill @PersonWhoFailed @AlsoAPersonWhoFailed`
+e.g. `$p$SimonKill @PersonWhoFailed @AlsoAPersonWhoFailed`
 
-`SimonRevive`:
+`$p$SimonRevive`:
 Revive Simon Says disqualified Participant(s).
-e.g. `-SimonRevive @PersonWhoGetsAChance @another_person69`
+e.g. `$p$SimonRevive @PersonWhoGetsAChance @another_person69`
 
-`SimonLeftAlive`:
+`$p$SimonLeftAlive`:
 Lists the number of simon says participant(s) that are still alive.
 
-`SimonReset`:
+`$p$SimonReset`:
 Removes the Simon Says Participant and Simon Says Disqualified roles from every member.
 
-`SimonSaysSetup`:
+`$p$SimonSaysSetup`:
 Setups your server to hold Simon Says Events.
 """
 
 help_ticket_system = '''
-`New [reason]`:
+`$p$New [reason]`:
 Create a new ticket, reason is optional.
-e.g. `-new Why is this bot so unstable??? HELP`
+e.g. `$p$new Why is this bot so unstable??? HELP`
 
-`Add @<Role or User>`:
+`$p$Add @<Role or User>`:
 Add a role or a user to the private ticket.
-e.g. `-add @DemoSupportMan`
+e.g. `$p$add @DemoSupportMan`
 
-`Remove @<Role or User>`:
-Some as `-add` but removes the user/role instead.
-e.g. `-remove @AllBots`
+`$p$Remove @<Role or User>`:
+Some as `$p$add` but removes the user/role instead.
+e.g. `$p$remove @AllBots`
 
-`Close [reason]`:
+`$p$Close [reason]`:
 Close the current ticket with an optional reason.
-e.g. `-close Solved this issue in #faq`
+e.g. `$p$close Solved this issue in #faq`
 
-`TicketSystemSetup`:
+`$p$TicketSystemSetup`:
 Setup your server to enable ticket system.
 '''
 
 help_fun_commands = '''
-`8Ball <TO PREDICT>`:
+`$p$8Ball <TO PREDICT>`:
 Predicts the outcome of your statement
 
-`RollDice`: 
+`$p$RollDice`: 
 Rolls a dice a tells the result
 
-`FlipCoin`:
+`$p$FlipCoin`:
 Flip a coin
 
-`Meme`:
+`$p$Meme`:
 Sends a Meme
 
-`DankMeme`:
+`$p$DankMeme`:
 Sends a Meme from dankmemes subreddit
 
-`sendMemes <amount>`:
-Same as `-Meme` but sends the memes in bulk and straight to your DM's, you can optionally say "dank" at the end to have the memes from dankmemes subreddit
-`for e.g. -sendMemes 10 dank`
+`$p$sendMemes <amount>`:
+Same as `$p$Meme` but sends the memes in bulk and straight to your DM's, you can optionally say "dank" at the end to have the memes from dankmemes subreddit
+`for e.g. $p$sendMemes 10 dank`
 '''
 
 help_embeds = {
@@ -136,9 +139,10 @@ class HelpCommand(commands.Cog):
             try:
                 reaction, user = await self.client.wait_for('reaction_add', timeout=600, check=check)
                 try:
-                    embed=help_embeds[str(reaction.emoji)]
+                    embed:discord.Embed=help_embeds[str(reaction.emoji)]
                 except KeyError:
-                    embed=help_message.embed
+                    embed:discord.Embed=help_message.embeds[0]
+                embed.description = embed.description.replace('$p$', self.client.prefix(self.client, ctx.message))
                 embed.color = discord.Color.from_hsv(random(), 1, 1)
                 embed.set_footer(text="Please react below on one of the already reacted emojis for accessing categories")
                 await help_message.edit(embed=embed)

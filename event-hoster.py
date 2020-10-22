@@ -10,9 +10,17 @@ from data.utils.checks import author_is_zacky
 from data.utils.functions import read_file, console_log, cprint
 from discord.ext import commands, tasks
 
-client = commands.Bot(command_prefix=('z!', '.', '!', '>', '-'), case_insensitive=True)
+def get_guild_prefix(client:commands.Bot, message:discord.Message):
+    try:
+        return client.id_list['prefixes'][f'{message.guild.id}']
+    except KeyError: 
+        client.id_list['prefixes'][f'{message.guild.id}'] = '%'
+        get_guild_prefix(client, message)
+
+client = commands.Bot(command_prefix=get_guild_prefix, case_insensitive=True)
 client.version = "v0.0.8"
 client.id_list = {}
+client.prefix = get_guild_prefix
 colorama.init()
 
 def boot_bot(blacklisted_extensions : tuple) -> None: # i am not using the on_ready event because then the on_ready event in cogs won't work, and putting it all in a function so its looking clean
@@ -124,6 +132,29 @@ async def ping(ctx):
         title='Response Delay: {:.2f}ms'.format(duration) + f"\nWebsocket Latency: {round(client.latency*1000)}ms",
         color=discord.Color.green()
     ))
+
+@client.event
+async def on_message(message:discord.Message):
+    if message.content in (f'<@{client.user.id}>', f'<@!{client.user.id}>'):
+        await message.channel.send(f'***My default Prefix is `$p$`, use `$p$prefix` command to set a prefix for this server, and use `$p$help` to get a list of all the commands***'.replace('$p$', client.prefix(client, message)))
+
+    await client.process_commands(message)
+
+@client.command()
+@commands.has_permissions(manage_guild=True)
+async def prefix(ctx:commands.Context, prefix:str):
+    client.id_list['prefixes'][f'{ctx.guild.id}'] = prefix
+    await ctx.send(embed=discord.Embed(
+        description="Prefix changed to `%s` Successfully" % (prefix, ),
+        color=discord.Color.green()
+    ))
+
+@prefix.error
+async def clear_error(ctx, error):
+    if isinstance(error, commands.MissingPermissions):
+        await ctx.send(":warning: **You either don't have the `Manage Server` or I don't have the `Embed Links` permission** :warning:")
+    elif isinstance(error, commands.MissingRequiredArgument):
+        await ctx.send(":warning: **You didn't specify which prefix to set to!** :warning:\n***`For e.g. $p$prefix $`***".replace('$p$', client.prefix(client, ctx.message)))
 
 @client.command()
 async def report(ctx, *, to_report):

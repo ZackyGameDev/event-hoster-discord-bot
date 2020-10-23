@@ -19,8 +19,8 @@ initial_json = { # If the json file doesn't exist, i will create it and put this
 }
 
 class JsonParser(commands.Cog):
-    
-    def __init__(self, client):    
+
+    def __init__(self, client):
         self.client = client
         self.save_data_as_json.start()
         self.upload_json_to_discord.start()
@@ -30,21 +30,22 @@ class JsonParser(commands.Cog):
             f = open('id-list.json', 'w')
             f.write(json.dumps(initial_json))
             f.close()
-        
+
     def cog_unload(self):
         self.save_data_as_json.stop()
         self.upload_json_to_discord.stop()
-        
+
     @commands.Cog.listener()
     async def on_ready(self):
-        json_data_file = open("id-list.json", "w+")
+        try:
+            json_data_file = open("id-list.json", "r")
+        except IOError:
+            json_data_file = open("id-list.json", "w+")
         json_data = json.loads(json_data_file.read())
-        for key in initial_json:
-            try: json_data[key]
-            except KeyError: json_data[key] = initial_json[key]
         self.client.id_list:dict = json_data
         console_log(f'Loaded the json data: {json.dumps(self.client.id_list, indent=2, sort_keys=True)}', "green")
         json_data_file.close()
+        self.client.id_list['emojis'] = initial_json['emojis']
 
     @tasks.loop(seconds=30)
     async def save_data_as_json(self):

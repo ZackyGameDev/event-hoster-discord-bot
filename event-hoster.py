@@ -14,7 +14,7 @@ from discord.ext import commands, tasks
 def get_guild_prefix(client:commands.Bot, message:discord.Message):
     try:
         return client.id_list['prefixes'][f'{message.guild.id}']
-    except KeyError: 
+    except KeyError:
         client.id_list['prefixes'][f'{message.guild.id}'] = client.default_prefix
         client.prefix(client, message) # The client.prefix = get_guild_prefix, this is to avoid getting not defined function issue in cogs
 
@@ -32,7 +32,7 @@ def boot_bot(blacklisted_extensions : tuple) -> None: # i am not using the on_re
     else:
         os.system("clear")
     cprint(read_file("startup_ascii.txt").format(client.version), "yellow")
-    
+
     # getting list of all paths to extensions
     filelist = []
     for root, dirs, files in os.walk("data/"):
@@ -61,6 +61,8 @@ boot_bot(blacklisted_extensions = json.loads(read_file("config.json"))["blacklis
 async def on_ready():
     await asyncio.sleep(5) # Gotta wait for the extensions to do their thing first, (for e.g. id_list needs to be defined)
     # Making sure every server has a default prefix to avoid future errors
+    try: client.id_list['prefixes']
+    except KeyError: client.id_list['prefixes'] = dict()
     console_log("Serving in the following guilds:")
     for guild in client.guilds:
         console_log(f"....{guild.name}[{guild.id}]")
@@ -68,7 +70,7 @@ async def on_ready():
             client.id_list['prefixes'][f'{guild.id}']
         except KeyError:
             client.id_list['prefixes'][f'{guild.id}'] = client.default_prefix
-            
+
     console_log('~~~~~~ Commands, Prefixes and Extensions loaded, boot successful ~~~~~~', "green")
     console_log('~~~~~~~~~~~ Serving in {} Number of guilds ~~~~~~~~~~~'.format(len(client.guilds)), "green")
     change_the_status.start()
@@ -95,7 +97,7 @@ async def reload_extension(ctx, extension):
     except Exception as e:
         await ctx.send(e)
         console_log("Extension Reload failed: {}".format(e), "white", "on_red")
-        
+
 @client.command()
 @commands.check(author_is_zacky)
 async def unload_extension(ctx, extension):
@@ -108,10 +110,10 @@ async def unload_extension(ctx, extension):
         msg = "Failed to unload extension {}, {}".format(extension, e)
         col = 'white'
         on_col = 'on_red'
-    
+
     console_log(msg, col, on_col)
     await ctx.send(msg)
-    
+
 @client.command()
 @commands.check(author_is_zacky)
 async def load_extension(ctx, extension):

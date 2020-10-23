@@ -159,7 +159,7 @@ async def ping(ctx):
 @client.event
 async def on_message(message:discord.Message):
     if message.content in (f'<@{client.user.id}>', f'<@!{client.user.id}>'):
-        await message.channel.send(f'***My Prefix for this Server is `$p$`, use `$p$prefix` command to set a prefix for this server, and use `$p$help` to get a list of all the commands***'.replace('$p$', client.prefix(client, message)))
+        await message.channel.send(f'**\n*My Prefix for this Server is `$p$`, use `$p$prefix` command to set a prefix for this server, and use `$p$help` to get a list of all the commands***'.replace('$p$', client.prefix(client, message)))
 
     await client.process_commands(message)
 
@@ -175,9 +175,9 @@ async def prefix(ctx:commands.Context, prefix:str):
 @prefix.error
 async def clear_error(ctx, error):
     if isinstance(error, commands.MissingPermissions):
-        await ctx.send(":warning: **You either don't have the `Manage Server` or I don't have the `Embed Links` permission** :warning:")
+        await ctx.send("**\n:warning:** **You either don't have the `Manage Server` or I don't have the `Embed Links` permission** :warning:")
     elif isinstance(error, commands.MissingRequiredArgument):
-        await ctx.send(":warning: **You didn't specify which prefix to set to!** :warning:\n***`For e.g. $p$prefix $`***".replace('$p$', client.prefix(client, ctx.message)))
+        await ctx.send("**\n:warning:** **You didn't specify which prefix to set to!** :warning:\n***`For e.g. $p$prefix $`***".replace('$p$', client.prefix(client, ctx.message)))
 
 @client.command()
 async def report(ctx, *, to_report):

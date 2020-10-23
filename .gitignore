@@ -1,3 +1,7 @@
+# Test files
+test.py
+test.json
+
 # Private Secret API Keys/Tokens
 token.txt
 ServiceAccountCreds.json

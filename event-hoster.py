@@ -202,7 +202,7 @@ async def report(ctx, *, to_report):
 async def botinfo(ctx):
     await ctx.send(embed=discord.Embed(
         title="Bot info",
-        description=json.loads(read_file("config.json"))["bot_info"],
+        description=json.loads(read_file("config.json"))["bot_info"].replace("$p$", client.prefix()),
         color=discord.Color.gold()
     ).set_author(
         name=f'{ctx.author}',

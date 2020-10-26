@@ -158,6 +158,9 @@ async def ping(ctx):
 
 @client.event
 async def on_message(message:discord.Message):
+    if isinstance(message.channel, discord.DMChannel):
+        console_log(f'{message.author} messaged me: {message.content}')
+        return
     if message.content in (f'<@{client.user.id}>', f'<@!{client.user.id}>'):
         await message.channel.send(f'**\n*My Prefix for this Server is `$p$`, use `$p$prefix` command to set a prefix for this server, and use `$p$help` to get a list of all the commands***'.replace('$p$', client.prefix(client, message)))
 

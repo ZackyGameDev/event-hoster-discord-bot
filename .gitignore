@@ -1,6 +1,12 @@
+# Not ready to be pushed yet
+README.md
+
 # Test files
 test.py
 test.json
+
+# IDE
+.vscode/
 
 # Private Secret API Keys/Tokens
 token.txt

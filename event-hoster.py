@@ -17,8 +17,10 @@ def get_guild_prefix(client:commands.Bot, message:discord.Message):
     except KeyError:
         client.id_list['prefixes'][f'{message.guild.id}'] = client.default_prefix
         client.prefix(client, message) # The client.prefix = get_guild_prefix, this is to avoid getting not defined function issue in cogs
-
-client = commands.Bot(command_prefix=get_guild_prefix, case_insensitive=True)
+intents: discord.Intents = discord.Intents.default()
+intents.reactions = True
+intents.members = True
+client = commands.Bot(command_prefix=get_guild_prefix, case_insensitive=True, intents=intents)
 client.version = "v0.0.8"
 client.id_list = {}
 client.default_prefix = '$' # If no custom prefixes for any guild is set, this is the prefix used by default

@@ -30,7 +30,26 @@ def console_log(to_log:str, color=None, on_color=None, have_to_pprint=False) -> 
         col_print(to_print, color, on_color)
         logs.write(to_print+'\n')
     logs.close()
-                        
+
+def suffixed_time_to_int(string_representation_of_time: str) -> int:
+    """
+    This function takes something like `"2m 6h 1s"` and returns back the time duration in seconds (int)
+    """
+    time = string_representation_of_time.split()
+    for i in range(len(time)):
+        if time[i].endswith("s"):
+            time[i] = int(time[i][:-1])
+        elif time[i].endswith("m"): 
+            time[i] = int(time[i][:-1]) * 60
+        elif time[i].endswith("h"): 
+            time[i] = int(time[i][:-1]) * 60 * 60
+        elif time[i].endswith("d"): 
+            time[i] = int(time[i][:-1]) * 60 * 60 * 24
+        else: 
+            raise ValueError("Proper duration not passed")
+    
+    return sum(time)
+
 def read_file(filename):
     '''Just reads a file and returns the content in it'''
     f = open(filename)

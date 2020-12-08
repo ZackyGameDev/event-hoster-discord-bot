@@ -39,6 +39,11 @@ Get information about this bot
 """
 
 help_simon_says = """
+`$p$SimonSaysStart <how long to accept participants>`:
+Creates a participation message, which users can react to, to get the Simon Says Participation role.
+This will only accept participants as long as the time you give
+e.g. `$p$SimonSaysStart 5h 30m`
+
 `$p$SimonSays`:
 Say Something as Simon in the Simon Says Events Channel.
 e.g. `$p$SimonSays person below will be killed!`

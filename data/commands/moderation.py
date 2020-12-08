@@ -3,38 +3,39 @@ import discord
 from discord.ext import commands
 from random import random
 
+
 class ModerationCommands(commands.Cog):
-    
+
     def __init__(self, client):
         self.client = client
-    
+
     def cant_ban_user_responses(self, ctx):
         return {
-            self.client.user.id : discord.Embed(
-                description = 'no u',
-                color = discord.Color.red()
+            self.client.user.id: discord.Embed(
+                description='no u',
+                color=discord.Color.red()
             ),
-            ctx.author.id : discord.Embed(
-                title = "Seriously?",
-                description = 'Are you seriously gonna ban **yourself**',
-                color = discord.Color.red()
+            ctx.author.id: discord.Embed(
+                title="Seriously?",
+                description='Are you seriously gonna ban **yourself**',
+                color=discord.Color.red()
             )
         }
-    
+
     @commands.command()
     @commands.has_permissions(ban_members=True)
-    async def ban(self, ctx, member_to_ban : discord.Member, *, reason='None'):
-        
+    async def ban(self, ctx, member_to_ban: discord.Member, *, reason='None'):
+
         if member_to_ban.id in self.cant_ban_user_responses(ctx):
             await ctx.send(embed=self.cant_ban_user_responses(ctx)[member_to_ban.id])
             return
-        
+
         if len(reason) > 150:
             await ctx.send('human thats a long reason keep it under 150 characters')
             return
-        
+
         await member_to_ban.ban(reason=reason)
-        
+
         try:
             await ctx.send(embed=discord.Embed(
                 title=f'{member_to_ban} has been Banned',
@@ -49,7 +50,7 @@ class ModerationCommands(commands.Cog):
                 await ctx.send(f'Banned {member_to_ban} with reason: {reason}.\nAlso give me the perms to send embeds in here sending raw content looks bland')
             except:
                 await ctx.author.send(f'Banned {member_to_ban} with reason: {reason}.\nAlso Come on, give me the perms to message in the server like bruh.')
-        
+
     @ban.error
     async def handle_error(self, ctx, error):
         if isinstance(error, commands.Forbidden) or isinstance(error, commands.BotMissingPermissions):
@@ -68,23 +69,23 @@ class ModerationCommands(commands.Cog):
             await ctx.send('do that again, but this time mention the person to ban')
         elif isinstance(error, commands.MissingRequiredArgument):
             await ctx.send(embed=discord.Embed(
-                title="Missing Arguments!", 
+                title="Missing Arguments!",
                 description="Please mention the person to ban!\nFor e.g. `z!ban @RuleBreaker [optional reason here]`",
                 color=discord.Color.red()
             ))
 
     @commands.command()
     @commands.has_permissions(kick_members=True)
-    async def kick(self, ctx, member_to_kick : discord.Member, *, reason='None'):
-        
+    async def kick(self, ctx, member_to_kick: discord.Member, *, reason='None'):
+
         if member_to_kick.id in self.cant_ban_user_responses(ctx):
             await ctx.send(embed=self.cant_ban_user_responses(ctx)[member_to_kick.id].replace('ban', 'kick'))
             return
-        
+
         if len(reason) > 150:
             await ctx.send('human thats a long reason keep it under 150 characters')
             return
-        
+
         await member_to_kick.kick(reason=reason)
 
         try:
@@ -101,7 +102,7 @@ class ModerationCommands(commands.Cog):
                 await ctx.send(f'Kicked {member_to_kick} with reason: {reason}.\nAlso give me the perms to send embeds in here sending raw content looks bland')
             except:
                 await ctx.author.send(f'Kicked {member_to_kick} with reason: {reason}.\nAlso Come on, give me the perms to message in the server like bruh.')
-    
+
     @kick.error
     async def handle_error(self, ctx, error):
         if isinstance(error, commands.Forbidden) or isinstance(error, commands.BotMissingPermissions):
@@ -120,20 +121,21 @@ class ModerationCommands(commands.Cog):
             await ctx.send('do that again, but this time mention the person to kick')
         elif isinstance(error, commands.MissingRequiredArgument):
             await ctx.send(embed=discord.Embed(
-                title="Missing Arguments!", 
-                description="Please mention the person to kick!\nFor e.g. `z!kick @RuleBreaker [Optional reason here]`", 
+                title="Missing Arguments!",
+                description="Please mention the person to kick!\nFor e.g. `z!kick @RuleBreaker [Optional reason here]`",
                 color=discord.Color.red()
             ))
 
     @commands.command(aliases=['revokeBan'])
     @commands.has_permissions(ban_members=True)
-    async def unban(self, ctx, *, user_to_unban : str):
+    async def unban(self, ctx, *, user_to_unban: str):
         try:
-            user_to_unban_name, user_to_unban_discriminator = user_to_unban.split('#')
+            user_to_unban_name, user_to_unban_discriminator = user_to_unban.split(
+                '#')
         except:
             await ctx.send('Please send the user to unban in the following format: `UserName#FourDigitTag`')
             return
-        
+
         banned_users = await ctx.guild.bans()
         for ban_entry in banned_users:
             if (ban_entry.user.name, ban_entry.user.discriminator) == (user_to_unban_name, user_to_unban_discriminator):
@@ -141,7 +143,7 @@ class ModerationCommands(commands.Cog):
                 try:
                     await ctx.send(embed=discord.Embed(
                         title=f"Ban from {ban_entry.user} revoked",
-                        description=f"by {str(ctx.author)}", 
+                        description=f"by {str(ctx.author)}",
                         color=discord.Color.green()
                     ))
                 except:
@@ -149,7 +151,7 @@ class ModerationCommands(commands.Cog):
                 else:
                     await ctx.author.send(embed=discord.Embed(
                         title=f"Ban from {ban_entry.user} revoked",
-                        description=f"Also give me the Permissions to send messages in the server like come on human!", 
+                        description=f"Also give me the Permissions to send messages in the server like come on human!",
                         color=discord.Color.green()
                     ))
 
@@ -157,8 +159,8 @@ class ModerationCommands(commands.Cog):
     async def clear_error(self, ctx, error):
         if isinstance(error, commands.MissingRequiredArgument):
             await ctx.send(embed=discord.Embed(
-                title="Missing Arguments!", 
-                description="Please send the **username** 4 digit **Tag** or **Discriminator** of the user to unban\n**for e.g.**\n~~`z!unban InnocentGuy`~~\n`z!unban InnocentGuy#6969`", 
+                title="Missing Arguments!",
+                description="Please send the **username** 4 digit **Tag** or **Discriminator** of the user to unban\n**for e.g.**\n~~`z!unban InnocentGuy`~~\n`z!unban InnocentGuy#6969`",
                 color=discord.Color.red()
             ))
         elif isinstance(error, commands.MissingPermissions):
@@ -167,6 +169,7 @@ class ModerationCommands(commands.Cog):
                 description="Only the members who already have the permission to ***`Ban Members`*** are allowed to use this command",
                 color=discord.Color.red()
             ))
-            
+
+
 def setup(client):
     client.add_cog(ModerationCommands(client))

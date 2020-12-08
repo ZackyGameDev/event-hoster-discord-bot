@@ -109,29 +109,30 @@ Same as `$p$Meme` but sends the memes in bulk and straight to your DM's, you can
 '''
 
 help_embeds = {
-    "\U0001F642" : discord.Embed( # 🙂 :slight_smile:
+    "\U0001F642": discord.Embed(  # 🙂 :slight_smile:
         title="General Commands",
         description=help_general
     ),
-    "\U0001F921" : discord.Embed( # 🤡 :clown:
+    "\U0001F921": discord.Embed(  # 🤡 :clown:
         title="Simon Says Commands",
         description=help_simon_says
     ),
-    "\U0001F39F" : discord.Embed( # 🎟 :tickets:
+    "\U0001F39F": discord.Embed(  # 🎟 :tickets:
         title="Ticket System Commands",
         description=help_ticket_system
     ),
-    "\U0001F3AE" : discord.Embed( # 🎮 :video_game:
+    "\U0001F3AE": discord.Embed(  # 🎮 :video_game:
         title="Fun Commands",
         description=help_fun_commands
     )
 }
 
+
 class HelpCommand(commands.Cog):
     def __init__(self, client):
         self.client = client
         self.client.remove_command("help")
-    
+
     @commands.command()
     async def help(self, ctx):
         help_message = await ctx.send(embed=discord.Embed(title="React Below For Help", description=initial_description, color=discord.Color.gold()))
@@ -144,12 +145,14 @@ class HelpCommand(commands.Cog):
             try:
                 reaction, user = await self.client.wait_for('reaction_add', timeout=600, check=check)
                 try:
-                    embed:discord.Embed=help_embeds[str(reaction.emoji)]
+                    embed: discord.Embed = help_embeds[str(reaction.emoji)]
                 except KeyError:
-                    embed:discord.Embed=help_message.embeds[0]
-                embed.description = embed.description.replace('$p$', self.client.prefix(self.client, ctx.message))
+                    embed: discord.Embed = help_message.embeds[0]
+                embed.description = embed.description.replace(
+                    '$p$', self.client.prefix(self.client, ctx.message))
                 embed.color = discord.Color.from_hsv(random(), 1, 1)
-                embed.set_footer(text="Please react below on one of the already reacted emojis for accessing categories")
+                embed.set_footer(
+                    text="Please react below on one of the already reacted emojis for accessing categories")
                 await help_message.edit(embed=embed)
                 try:
                     await reaction.remove(user)
@@ -157,6 +160,7 @@ class HelpCommand(commands.Cog):
                     continue
             except TimeoutError:
                 break
-    
+
+
 def setup(client):
     client.add_cog(HelpCommand(client))

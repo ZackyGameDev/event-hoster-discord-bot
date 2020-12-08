@@ -5,17 +5,18 @@ from random import random, randrange
 from datetime import datetime, timedelta
 from data.events.giveawaysupdater import gmessage_update_loop
 
+
 class Giveaways(commands.Cog):
     def __init__(self, client):
         self.client = client
-        
+
     @commands.group(pass_context=True)
     async def giveaway(self, ctx):
         if ctx.invoked_subcommand is None:
             await ctx.send(
                 embed=discord.Embed(
-                    title='Invalid giveaway command passed!', 
-                    description='If you would like to get a full list of commands then please use the help command.', 
+                    title='Invalid giveaway command passed!',
+                    description='If you would like to get a full list of commands then please use the help command.',
                     color=discord.Color.red()
                 )
             )
@@ -35,19 +36,19 @@ class Giveaways(commands.Cog):
             await ctx.send(embed=discord.Embed(
                 title="Missing Permissions!",
                 description="You either need the `manage server` permission or have a role named Giveaways to perform this action!",
-                color= discord.Color.red()
+                color=discord.Color.red()
             ))
             return
-        
-        def is_reply(message : discord.Message):
+
+        def is_reply(message: discord.Message):
             return ctx.channel == message.channel and ctx.author == message.author
-        
+
         cancelled_embed = discord.Embed(
             title='Stopped',
             description="Giveaway creation has been cancelled",
             color=discord.Color.red()
         )
-        
+
         # How long will it last?
         await ctx.send(embed=discord.Embed(
             description='Please tell me how long this giveaway will last\n\n`For e.g. if you want this to last 1 day 2 hours and 4 minutes, reply like this: 1d 2h 4m`',
@@ -55,28 +56,29 @@ class Giveaways(commands.Cog):
         ).set_footer(
             text="You can cancel this by typing `stop`"
         ))
-        
+
         time_stamps = {
             "days": 0,
             "hours": 0,
             "minutes": 0,
             "seconds": 0
         }
-        
+
         message = await self.client.wait_for('message', check=is_reply, timeout=60)
         if message.content.lower() == "stop":
             await ctx.send(embed=cancelled_embed)
             return
-        
+
         time_stamps_input = message.content.split(' ')
         set_time = ""
-        
+
         for time_stamp in time_stamps_input:
             for unit in time_stamps:
                 if time_stamp.endswith(unit[0]):
-                       time_stamps[unit] = int(time_stamp[:-1])
-                       set_time = set_time+time_stamp[:-1]+' '+unit.capitalize()+' '
-        
+                    time_stamps[unit] = int(time_stamp[:-1])
+                    set_time = set_time + \
+                        time_stamp[:-1]+' '+unit.capitalize()+' '
+
         if set_time != "":
             await ctx.send(embed=discord.Embed(title="Alright!", description=f"Alright! The Giveaway will last **{set_time}**", color=discord.Color.gold()))
         else:
@@ -97,7 +99,7 @@ class Giveaways(commands.Cog):
             return
         prize = message.content
         await ctx.send(embed=discord.Embed(title="Understood", description=f'This giveaway will have {prize} as prize', color=discord.Color.from_hsv(random(), 1, 1)))
-        
+
         # What will be given away?
         await ctx.send(embed=discord.Embed(
             description='Please tell me how many winners this giveaway will have\n\n`Maximum number is 10`',
@@ -115,7 +117,7 @@ class Giveaways(commands.Cog):
             await ctx.send(embed=discord.Embed(description="Winners cannot be more than **10**", color=discord.Color.red()))
             return
         await ctx.send(embed=discord.Embed(title="Understood", description=f'This giveaway will have {winners} winners', color=discord.Color.from_hsv(random(), 1, 1)))
-        
+
         # In which channel!?!?
         await ctx.send(embed=discord.Embed(
             description="Please tell me in which channel will this giveaway be created",
@@ -123,14 +125,14 @@ class Giveaways(commands.Cog):
         ).set_footer(
             text="You can cancel this by typing `stop`"
         ))
-        
+
         message = await self.client.wait_for('message', check=is_reply, timeout=60)
         if message.content.lower() == "stop":
             await ctx.send(embed=cancelled_embed)
             return
         channel = ctx.guild.get_channel(int(message.content[:-1][-18:]))
         await ctx.send(embed=discord.Embed(title="Understood", description=f'This giveaway will be hosted in <#{channel.id}>', color=discord.Color.from_hsv(random(), 1, 1)))
-        
+
         # All set?
         confirm_msg = await ctx.send(embed=discord.Embed(
             title="All set?",
@@ -139,10 +141,10 @@ class Giveaways(commands.Cog):
         ).set_footer(
             text="React on this message to confirm"
         ))
-        
+
         await confirm_msg.add_reaction("✅")
         await confirm_msg.add_reaction("❎")
-            
+
         def check(reaction, user, confirm_msg=confirm_msg):
             return user == ctx.message.author and reaction.message.id == confirm_msg.id and str(reaction.emoji) in ("✅", "❎")
 
@@ -156,7 +158,7 @@ class Giveaways(commands.Cog):
             ).set_footer(
                 text="Try again"
             ))
-        
+
         if reaction.emoji == "❎":
             await confirm_msg.edit(embed=discord.Embed(
                 title="Cancelled",
@@ -164,47 +166,52 @@ class Giveaways(commands.Cog):
                 color=discord.Color.red()
             ))
             return
-        
+
         giveaway_message = await channel.send(embed=discord.Embed(
             title=f"{winners} {prize} Giveaway!",
             description=f"React on this message with :tada: to enter!\nGiveaway Ends in: **{set_time}**",
-            timestamp=datetime.utcnow()+timedelta(days=time_stamps['days'], seconds=time_stamps['seconds'], minutes=time_stamps['minutes'], hours=time_stamps['hours']),
-            color=discord.Color.from_rgb(0, randrange(0, 255), randrange(0, 255))
+            timestamp=datetime.utcnow() +
+            timedelta(days=time_stamps['days'], seconds=time_stamps['seconds'],
+                      minutes=time_stamps['minutes'], hours=time_stamps['hours']),
+            color=discord.Color.from_rgb(
+                0, randrange(0, 255), randrange(0, 255))
         ).set_author(
             name=f'{ctx.author}',
             icon_url=f'https://cdn.discordapp.com/avatars/{ctx.author.id}/{ctx.author.avatar}.png'
         ).set_footer(
             text="This Giveaway will end on "
         ))
-        
+
         await giveaway_message.add_reaction("🎉")
-        
+
         started_on = {
-            "year" : datetime.now().year,
-            "month" : datetime.now().month,
-            "day" : datetime.now().day,
-            "hour" : datetime.now().hour,
-            "minute" : datetime.now().minute,
-            "second" : datetime.now().second
+            "year": datetime.now().year,
+            "month": datetime.now().month,
+            "day": datetime.now().day,
+            "hour": datetime.now().hour,
+            "minute": datetime.now().minute,
+            "second": datetime.now().second
         }
-        
+
         giveaway = {
-            "started_on" : started_on,
-            "timestamps" : time_stamps,
-            "winners" : winners,
-            "prize" : prize,
-            "id" : f"{channel.id}/{giveaway_message.id}"
+            "started_on": started_on,
+            "timestamps": time_stamps,
+            "winners": winners,
+            "prize": prize,
+            "id": f"{channel.id}/{giveaway_message.id}"
         }
-        
+
         try:
-            self.client.id_list['guild_setup_id_saves'][str(ctx.guild.id)]["giveaways"].append(giveaway)
+            self.client.id_list['guild_setup_id_saves'][str(
+                ctx.guild.id)]["giveaways"].append(giveaway)
         except KeyError:
             try:
-                self.client.id_list['guild_setup_id_saves'][str(ctx.guild.id)]["giveaways"] = [giveaway]
+                self.client.id_list['guild_setup_id_saves'][str(ctx.guild.id)]["giveaways"] = [
+                    giveaway]
             except KeyError:
-                self.client.id_list['guild_setup_id_saves'][str(ctx.guild.id)] = {"giveaways" : [giveaway]}
-        
-        
+                self.client.id_list['guild_setup_id_saves'][str(ctx.guild.id)] = {
+                    "giveaways": [giveaway]}
+
         # Start updating the giveaway message
         start_on_json = giveaway["started_on"]
         started_on = datetime(
@@ -224,13 +231,15 @@ class Giveaways(commands.Cog):
             seconds=how_long_to_run_json['seconds']
         )
         remaining_time = how_long_to_run - giveaway_running_for
-        asyncio.create_task(gmessage_update_loop(self, giveaway, remaining_time))
-        
+        asyncio.create_task(gmessage_update_loop(
+            self, giveaway, remaining_time))
+
         await ctx.send(embed=discord.Embed(
             title="Giveaway started!",
             description=f"Giveaway started in <#{channel.id}>",
             color=discord.Color.green()
         ))
-        
+
+
 def setup(client):
     client.add_cog(Giveaways(client))

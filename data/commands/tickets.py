@@ -1,9 +1,10 @@
 import discord
 import json
-from asyncio import TimeoutError 
+from asyncio import TimeoutError
 from discord.ext import commands
 from data.utils.functions import prettify_string, read_file
 from random import random
+
 
 async def channel_is_ticket(self, ctx):
     channel_is_ticket = None
@@ -28,12 +29,14 @@ async def channel_is_ticket(self, ctx):
         ).set_footer(
             text="if you think this is a mistake, please delete this channel manually"
         ))
-    
+
     return channel_is_ticket
+
 
 async def get_ticket_category_and_role(self, ctx):
     try:
-        category_id = self.client.id_list['guild_setup_id_saves'][str(ctx.guild.id)]['ticket_system']['categories']['tickets_category']
+        category_id = self.client.id_list['guild_setup_id_saves'][str(
+            ctx.guild.id)]['ticket_system']['categories']['tickets_category']
         category = None
         for category in ctx.guild.categories:
             if category.id == category_id:
@@ -41,7 +44,8 @@ async def get_ticket_category_and_role(self, ctx):
             else:
                 category = None
 
-        staff_role_id = self.client.id_list['guild_setup_id_saves'][str(ctx.guild.id)]['ticket_system']['roles']['ticket_system_staff']
+        staff_role_id = self.client.id_list['guild_setup_id_saves'][str(
+            ctx.guild.id)]['ticket_system']['roles']['ticket_system_staff']
 
         return category, staff_role_id
     except KeyError:
@@ -53,29 +57,31 @@ async def get_ticket_category_and_role(self, ctx):
             text="If you think this is an error, contact Zacky#9543"
         ))
 
+
 class TicketSystem(commands.Cog):
     def __init__(self, client):
         self.client = client
         self.emojis = json.loads(read_file('id-list.json'))['emojis']
-        
+
     @commands.command(aliases=["new", "newTicket", "new-ticket"])
     async def new_ticket(self, ctx, *, reason=None):
         new_tickets_category, staff_role_id = await get_ticket_category_and_role(self, ctx)
-        
+
         new_ticket_channel_overwrites = {
-            ctx.author : discord.PermissionOverwrite(read_messages=True),
-            self.client.user : discord.PermissionOverwrite(read_messages=True, embed_links=True),
-            ctx.guild.default_role : discord.PermissionOverwrite(read_messages=False),
-            ctx.guild.get_role(staff_role_id) : discord.PermissionOverwrite(read_messages=True)
+            ctx.author: discord.PermissionOverwrite(read_messages=True),
+            self.client.user: discord.PermissionOverwrite(read_messages=True, embed_links=True),
+            ctx.guild.default_role: discord.PermissionOverwrite(read_messages=False),
+            ctx.guild.get_role(staff_role_id): discord.PermissionOverwrite(read_messages=True)
         }
-        
+
         try:
-            tickets_count = self.client.id_list['tickets_count'][str(ctx.guild.id)]
+            tickets_count = self.client.id_list['tickets_count'][str(
+                ctx.guild.id)]
         except KeyError:
             self.client.id_list['tickets_count'][str(ctx.guild.id)] = 0
             tickets_count = 0
         self.client.id_list['tickets_count'][str(ctx.guild.id)] += 1
-        
+
         new_ticket = await new_tickets_category.create_text_channel(name=f"ticket-{tickets_count}", overwrites=new_ticket_channel_overwrites, reason=f'{reason} id:{ctx.author.id}')
         await new_ticket.send(embed=discord.Embed(
             description=f"Reason: `{reason}`",
@@ -105,7 +111,8 @@ class TicketSystem(commands.Cog):
         else:
             await ctx.send(embed=discord.Embed(
                 title="Something went wrong",
-                description="Please report the following thing to Zacky#9543:\n`{}`".format(str(error)),
+                description="Please report the following thing to Zacky#9543:\n`{}`".format(
+                    str(error)),
                 color=discord.Color.red()
             ))
 
@@ -123,7 +130,8 @@ class TicketSystem(commands.Cog):
             await ctx.channel.set_permissions(to_add, read_messages=True)
             await ctx.send(embed=discord.Embed(
                 title="Success!",
-                description="I have added {} to this ticket!".format(role_or_user),
+                description="I have added {} to this ticket!".format(
+                    role_or_user),
                 color=discord.Color.green()
             ).set_author(
                 name=f'{ctx.author}',
@@ -144,13 +152,14 @@ class TicketSystem(commands.Cog):
             await ctx.channel.set_permissions(to_remove, read_messages=False)
             await ctx.send(embed=discord.Embed(
                 title="Success!",
-                description="I have removed {} from this ticket!".format(role_or_user),
+                description="I have removed {} from this ticket!".format(
+                    role_or_user),
                 color=discord.Color.blue()
             ).set_author(
                 name=f'{ctx.author}',
                 icon_url=f'https://cdn.discordapp.com/avatars/{ctx.author.id}/{ctx.author.avatar}.png'
             ))
-    
+
     @commands.command(aliases=["ticket_close", "closeticket", "close-ticket", "ticketclose", "ticket-close", "close"])
     async def close_ticket(self, ctx, *, reason=None):
         if await channel_is_ticket(self, ctx) == True:
@@ -161,7 +170,7 @@ class TicketSystem(commands.Cog):
                 if ctx.channel.id == entry.target.id:
                     creator_id = int(entry.reason[-18:])
                     break
-            
+
             try:
                 await ctx.send(embed=discord.Embed(title="Closing ticket!", description="This ticket will be closed in **10 seconds**!\nIf you think this is a mistake, please send any message in this ticket!", color=discord.Color.blue()))
                 message = await self.client.wait_for('message', check=wait_for_deny, timeout=10)
@@ -185,24 +194,25 @@ class TicketSystem(commands.Cog):
         else:
             await ctx.send(embed=discord.Embed(
                 title="Something went wrong",
-                description="Please report the following thing to Zacky#9543:\n`{}`".format(str(error)),
+                description="Please report the following thing to Zacky#9543:\n`{}`".format(
+                    str(error)),
                 color=discord.Color.red()
             ))
-    
+
     @commands.command(aliases=["ticketSystemSetup", "ticket-system-setup"])
     async def ticket_system_setup(self, ctx):
         id_list_to_save = {
-            'roles' : {},
-            'categories' : {}
+            'roles': {},
+            'categories': {}
         }
-        
+
         def wait_for_reply_check(m):
             return m.author == ctx.message.author and m.channel == ctx.message.channel
-        
+
         # Getting roles
-        await ctx.send(embed=discord.Embed(description="Please tell me which role in this Server will belong to Ticket System Staff (the users that will have access to view all tickets), Either mention it, or just Tell me the name of the role",color=discord.Color.from_hsv(random(), 1, 1)))
+        await ctx.send(embed=discord.Embed(description="Please tell me which role in this Server will belong to Ticket System Staff (the users that will have access to view all tickets), Either mention it, or just Tell me the name of the role", color=discord.Color.from_hsv(random(), 1, 1)))
         message = await self.client.wait_for('message', check=wait_for_reply_check, timeout=120)
-        
+
         if message.content.startswith("<@&"):
             role_id = int(message.content[3:-1])
             role = message.guild.get_role(role_id)
@@ -213,20 +223,20 @@ class TicketSystem(commands.Cog):
 
         if role == None:
             await ctx.send(embed=discord.Embed(
-                title='Failed', 
+                title='Failed',
                 description='Failed to recognise role (perhaps it doesn\'t exist?), please **only** tell me the role you would like to use (name should be case-sensitive)',
                 color=discord.Color.red()
             ))
-                
+
         if ctx.message.author.roles[-1].position <= role.position:
-            await ctx.send(embed=discord.Embed(description="<a:crossGif:760758713777913876> That role is higher than your highest role!",color=discord.Color.red()))
+            await ctx.send(embed=discord.Embed(description="<a:crossGif:760758713777913876> That role is higher than your highest role!", color=discord.Color.red()))
         elif ctx.guild.get_member(self.client.user.id).roles[-1].position <= role.position:
-            await ctx.send(embed=discord.Embed(description="<a:crossGif:760758713777913876> My highest role is lower then that role!",color=discord.Color.red()))
+            await ctx.send(embed=discord.Embed(description="<a:crossGif:760758713777913876> My highest role is lower then that role!", color=discord.Color.red()))
         else:
             id_list_to_save['roles']['ticket_system_staff'] = role.id
             try:
                 await ctx.send(embed=discord.Embed(
-                    title="<a:checkGif:760758712876400680> Success", 
+                    title="<a:checkGif:760758712876400680> Success",
                     description=f"<@&{role.id}> is now set as the role for Staff/Users that will have access to see all the tickets <a:checkGif:760758712876400680> ",
                     color=discord.Color.green()
                 ))
@@ -234,9 +244,9 @@ class TicketSystem(commands.Cog):
                 await ctx.send(f"<a:checkGif:760758712876400680> {role.name} is now set as the role for Staff/Users that will have access to see all the tickets.")
 
         # Tickets Category
-        await ctx.send(embed=discord.Embed(description="Please tell me in which category I need to add the new tickets to. Just tell me the name of it.",color=discord.Color.from_hsv(random(), 1, 1)))
+        await ctx.send(embed=discord.Embed(description="Please tell me in which category I need to add the new tickets to. Just tell me the name of it.", color=discord.Color.from_hsv(random(), 1, 1)))
         message = await self.client.wait_for('message', check=wait_for_reply_check, timeout=120)
-        
+
         category = None
         for category in ctx.guild.categories:
             if category.name.upper() == message.content.upper():
@@ -244,7 +254,7 @@ class TicketSystem(commands.Cog):
             else:
                 category = None
 
-        if category == None :
+        if category == None:
             await ctx.send(embed=discord.Embed(
                 title=f"{self.emojis['crossGif']} Failed",
                 description="Please make sure that you are sending me the exact and correct name of the category. (this is case sensitive!)",
@@ -252,23 +262,24 @@ class TicketSystem(commands.Cog):
             ))
 
         id_list_to_save['categories']['tickets_category'] = category.id
-        
+
         try:
             await ctx.send(embed=discord.Embed(
-                title="<a:checkGif:760758712876400680> Success", 
+                title="<a:checkGif:760758712876400680> Success",
                 description=f"{category.name} is now set as the Category for Creating new tickets in! <a:checkGif:760758712876400680> ",
                 color=discord.Color.green()
             ))
         except:
-            await ctx.send(f"<a:checkGif:760758712876400680> {category.name} is now set as the Category for Creating new tickets in!(s).")            
-        
+            await ctx.send(f"<a:checkGif:760758712876400680> {category.name} is now set as the Category for Creating new tickets in!(s).")
+
         try:
-            self.client.id_list['guild_setup_id_saves'][str(ctx.guild.id)]["ticket_system"] = id_list_to_save
+            self.client.id_list['guild_setup_id_saves'][str(
+                ctx.guild.id)]["ticket_system"] = id_list_to_save
         except KeyError:
             self.client.id_list['guild_setup_id_saves'][str(ctx.guild.id)] = {
                 "ticket_system": id_list_to_save
             }
-        
+
         await ctx.send(embed=discord.Embed(
             title=f"{self.emojis['checkGif']} Setup successful!",
             description=f"Here is a summary of the setup:\nTicket System Staff Role: <@&{id_list_to_save['roles']['ticket_system_staff']}>\nCategory to create new tickets in: {category.name}",
@@ -276,6 +287,7 @@ class TicketSystem(commands.Cog):
         ).set_footer(
             text="you can set these values again, by using the `-SimonSaysSetup` command again."
         ))
-    
+
+
 def setup(client):
     client.add_cog(TicketSystem(client))

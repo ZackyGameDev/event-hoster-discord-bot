@@ -21,9 +21,7 @@ def get_guild_prefix(client: commands.Bot, message: discord.Message):
         client.prefix(client, message)
 
 
-intents: discord.Intents = discord.Intents.default()
-intents.reactions = True
-intents.members = True
+intents: discord.Intents = discord.Intents.all()
 client = commands.Bot(command_prefix=get_guild_prefix,
                       case_insensitive=True, intents=intents)
 client.version = "v0.0.8"

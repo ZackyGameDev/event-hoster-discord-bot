@@ -97,7 +97,11 @@ class Giveaways(commands.Cog):
         if message.content.lower() == "stop":
             await ctx.send(embed=cancelled_embed)
             return
-        prize = message.content
+        elif len(message.content) > 240:
+            await ctx.send(embed=discord.Embed(description="The prize can only be 240 characters long!", color=discord.Color.red()))
+            return
+        else:
+            prize = message.content
         await ctx.send(embed=discord.Embed(title="Understood", description=f'This giveaway will have {prize} as prize', color=discord.Color.from_hsv(random(), 1, 1)))
 
         # What will be given away?
@@ -222,7 +226,7 @@ class Giveaways(commands.Cog):
             minute=start_on_json["minute"],
             second=start_on_json['second']
         )
-        giveaway_running_for = datetime.utcnow() - started_on
+        giveaway_running_for = datetime.now() - started_on
         how_long_to_run_json = giveaway["timestamps"]
         how_long_to_run = timedelta(
             days=how_long_to_run_json["days"],

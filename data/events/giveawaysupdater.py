@@ -85,10 +85,10 @@ async def gmessage_update_loop(self, giveaway, remaining_time):
                 return
 
             # Declaring a winner
-            winners = f"<@{self.client.user.id}>"
+            winners = str()
             for i in range(giveaway["winners"]):
                 winner = f"<@{random.choice(users).id}>"
-                while winner == f"<@{self.client.user.id}>":
+                while winner == f"<@{self.client.user.id}>": # I don't want the bot to congratulate itself
                     winner = f"<@{random.choice(users).id}>"
                 winners = winners + winner + ' '
                 await giveaway_message.channel.send(f"Congratulations {winner}! You won **{giveaway['prize']}**\nhttps://discordapp.com/channels/{giveaway_message.channel.guild.id}/{gchannel_id}/{gmessage_id}")
@@ -149,7 +149,7 @@ class GiveawaysUpdater(commands.Cog):
                     minute=start_on_json["minute"],
                     second=start_on_json['second']
                 )
-                giveaway_running_for = datetime.utcnow() - started_on
+                giveaway_running_for = datetime.now() - started_on
                 how_long_to_run_json = giveaway["timestamps"]
                 how_long_to_run = timedelta(
                     days=how_long_to_run_json["days"],

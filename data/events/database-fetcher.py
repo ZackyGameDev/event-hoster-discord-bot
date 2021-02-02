@@ -1,6 +1,11 @@
+##########################################⚠️⚠️⚠️⚠️⚠️ A L E R T ⚠️⚠️⚠️⚠️⚠️#########################################
+#         Warning! This file is no longer used! the code below is a disaster and a dumpster fire!            #
+#                   Scroll and try to understand at your own risk of brain damage!                           #
+##############################################################################################################
+
+
 # This module was the first file in this repository, i wrote this when event hoster was just a personal bot for simon says events in my server
 # I am now going to update some old variable names to the current event-hoster's conventions
-# Warning! This file is no longer used! the code below is a disaster and a dumpster fire! scroll and try to understand at your own risk of brain damage!
 
 import discord
 import gspread

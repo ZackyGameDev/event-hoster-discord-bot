@@ -1,3 +1,6 @@
+# This module was the first file in this repository, i wrote this when event hoster was just a personal bot for simon says events in my server
+# I am now going to update some old variable names to the current event-hoster's conventions
+
 import discord
 import gspread
 import asyncio
@@ -12,6 +15,7 @@ from ast import literal_eval
 
 class DatabaseFetcher(commands.Cog):
 
+    # Logging into google sheets here
     def __init__(self, client):
         scope = [
             "https://spreadsheets.google.com/feeds",
@@ -20,10 +24,9 @@ class DatabaseFetcher(commands.Cog):
             "https://www.googleapis.com/auth/drive"
         ]
 
-        creds = ServiceAccountCredentials.from_json_keyfile_name(
-            "ServiceAccountCreds.json", scopes=scope)
+        creds = ServiceAccountCredentials.from_json_keyfile_name("ServiceAccountCreds.json", scopes=scope)
         gspread_client = gspread.authorize(creds)
-        sheet = gspread_client.open("api-tutorial").sheet1
+        sheet = gspread_client.open("api-tutorial").sheet1 # my google sheet was called api-tutorial then, idk why i didn't change it then, NOR AM I GOING TO CHANGE IT NOW, SIKE.
         self.client = client
         self.sheet = sheet
         self.fetchdatabase.start()
@@ -33,7 +36,7 @@ class DatabaseFetcher(commands.Cog):
 
     @commands.Cog.listener()
     async def on_ready(self):
-        self.client.database = dict()
+        self.client.id_list = dict()
 
     @tasks.loop(minutes=15)
     async def fetchdatabase(self):
@@ -42,15 +45,15 @@ class DatabaseFetcher(commands.Cog):
         # Fetching the database
         sheet = self.sheet
         raw_database = sheet.get_all_records()
-        database = dict()
+        id_list = dict()
         raw_database_to_list = list()
 
-        for row_dict in database:
+        for row_dict in id_list:
             # I am first going to get the values in a list to make things easier
             current_row_values = list()
             for item_index in row_dict:
                 current_row_values.append(row_dict[item_index])
-            database[current_row_values[0]] = {
+            id_list[current_row_values[0]] = {
                 'id_channel_simonsays': current_row_values[1],
                 'id_role_simonalive': current_row_values[2],
                 'id_role_simondead': current_row_values[3],
@@ -65,19 +68,19 @@ class DatabaseFetcher(commands.Cog):
         data_to_push = list()
 
         for row in raw_database_to_list:
-            if row[0] in self.client.database:
+            if row[0] in self.client.id_list:
                 continue
             data_to_push.append([
                 row[0],
-                self.client.databasep[row[0]]['id_channel_simonsays'],
-                self.client.databasep[row[0]]['id_role_simonalive'],
-                self.client.databasep[row[0]]['id_role_simondead'],
-                self.client.databasep[row[0]]['id_role_simoncontroller']
+                self.client.id_list[row[0]]['id_channel_simonsays'],
+                self.client.id_list[row[0]]['id_role_simonalive'],
+                self.client.id_list[row[0]]['id_role_simondead'],
+                self.client.id_list[row[0]]['id_role_simoncontroller']
             ])
 
         sheet.append_rows(data_to_push)
 
-        self.client.database.update(database)
+        self.client.id_list.update(id_list)
 
         console_log('Database fetch finished', "green")
 

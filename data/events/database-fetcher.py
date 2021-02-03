@@ -97,7 +97,7 @@ class DatabaseFetcher(commands.Cog):
                 str(self.client.id_database[server_id]['id_role_simoncontroller'])
             ])
         
-        self.sheet.delete_rows(2, len(data_to_push)+2)
+        self.sheet.delete_rows(2, len(self.sheet.get_all_records())+3)
         self.sheet.append_rows(data_to_push)
         
         console_log('Database Pushed to google sheet', "green")

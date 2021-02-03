@@ -1,5 +1,5 @@
 {
-    "blacklisted_extensions": ["data.events.database-fetcher"],
+    "blacklisted_extensions": ["data.events.old-database-fetcher"],
     "json_file_upload_channel_id": 717985234137776149,
     "suggestions_channel_id": 717656333767278623,
     "bug_reports_channel_id": 717656333767278623,

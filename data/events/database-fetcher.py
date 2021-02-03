@@ -71,13 +71,15 @@ class DatabaseFetcher(commands.Cog):
         # it will look something like [{'server_id': 3, 'id_channel_simonsays': 2, 'id_role_simonalive': 2, 'id_role_simondead': 3, 'id_role_simoncontroller': 4}, {'server_id': 3, 'id_channel_simonsays': 2, 'id_role_simonalive': 2, 'id_role_simondead': 5, 'id_role_simoncontroller': 32}]
         sheet_rows = self.sheet.get_all_records()
         for row in sheet_rows:
-            row_items_in_list = [row[i] for i in row]
+            row_items_in_list = [int(row[i]) for i in row]
             self.client.id_database[row_items_in_list[0]] = {
                 'id_channel_simonsays': row_items_in_list[1],
                 'id_role_simonalive': row_items_in_list[2],
                 'id_role_simondead': row_items_in_list[3],
                 'id_role_simoncontroller': row_items_in_list[4]
             }
+        
+        console_log(f'Loaded google sheet databaes: {self.client.id_database}', "green", have_to_pprint=True)
 
     @tasks.loop(minutes=15)
     async def fetchdatabase(self):
@@ -89,14 +91,15 @@ class DatabaseFetcher(commands.Cog):
         for server_id in self.client.id_database:
             data_to_push.append([
                 str(server_id),
-                self.client.id_database['id_channel_simonsays'],
-                self.client.id_database['id_role_simonalive'],
-                self.client.id_database['id_role_simondead'],
-                self.client.id_database['id_role_simoncontroller']
+                str(self.client.id_database[server_id]['id_channel_simonsays']),
+                str(self.client.id_database[server_id]['id_role_simonalive']),
+                str(self.client.id_database[server_id]['id_role_simondead']),
+                str(self.client.id_database[server_id]['id_role_simoncontroller'])
             ])
-
-        sheet.delete_rows(2, len(data_to_push))
-        sheet.append_rows(data_to_push)
+        
+        self.sheet.delete_rows(2, len(data_to_push)+2)
+        self.sheet.append_rows(data_to_push)
+        
         console_log('Database Pushed to google sheet', "green")
 
     @fetchdatabase.before_loop

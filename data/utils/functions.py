@@ -8,8 +8,8 @@ from pprint import PrettyPrinter
 
 def prettify_string(phrase: str):
     '''just takes in something like "hi_there" and will return something like "Hi There"'''
-    phrase.replace("_", " ")
-    phrase.capitalize()
+    phrase = phrase.replace("_", " ")
+    phrase = phrase.capitalize()
     return phrase
 
 

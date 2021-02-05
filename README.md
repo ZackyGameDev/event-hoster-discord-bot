@@ -19,4 +19,4 @@ This includes Giveaways, Ticket system, Simon Says Events, And more coming soon!
 
 ---->
 
-###### This README is to be updated soon
+###### This README is to be updated soon, maybe, ehhh, don't count on it

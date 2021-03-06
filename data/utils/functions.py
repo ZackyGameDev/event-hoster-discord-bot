@@ -24,7 +24,7 @@ def cprint(to_print: str, color=None, on_color=None, have_to_pprint=False) -> No
 
 
 def console_log(to_log: str, color=None, on_color=None, have_to_pprint=False) -> None:
-    '''Same as data.custom.functions.cprint(), but puts a timestamp before printing the line, and also puts the line into logs.txt'''
+    '''Same as data.custom.functions.cprint(), but puts a timestamp before printing the line, and also puts the line into `console.log` file'''
     logs = open("console.log", "a")
     if have_to_pprint:
         printer = PrettyPrinter(

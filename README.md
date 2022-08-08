@@ -1,6 +1,5 @@
-Event Hoster Discord Bot (OBSOLETE)
+Event Hoster Discord Bot
 ===========================
-## The discord.py library used two years ago at the time of writing this code has become obsolete, the code in this project has also pretty much become obsolete
 
 A discord bot created to handle everything that a giveaway/events hosting server requires.
 This includes Giveaways, Ticket system, Simon Says Events, And more coming soon!
